@@ -113,10 +113,7 @@ def upload_files(project):
         with open(content_path, 'w', encoding='utf-8') as f:
             f.write(description)
 
-    return f"{project.capitalize()} data uploaded. " + (
-        f"<a href='/files/{project}/thumbnail.jpg' target='_blank'>Download thumbnail.jpg</a>" if 'thumbnail.jpg' in saved_files else ""
-    )
-
+    return f"{project.capitalize()} data uploaded. "
 
 
 @app.route('/upload_text/<project>', methods=['POST'])
