@@ -7,30 +7,69 @@ SECRET_TOKEN = 'mysecrettoken'
 
 BASE_UPLOAD_DIR = 'uploads'
 MAX_SIZE_MB = 10
-app.config['MAX_CONTENT_LENGTH'] = MAX_SIZE_MB * 1024 * 1024  # 10 MB limit
+app.config['MAX_CONTENT_LENGTH'] = MAX_SIZE_MB * 1024 * 1024
 
-# Ensure project folders exist
 for folder in ['sherlockmode', 'gitasahasram']:
     os.makedirs(os.path.join(BASE_UPLOAD_DIR, folder), exist_ok=True)
 
 UPLOAD_PAGE_HTML = '''
 <!doctype html>
-<title>Upload Files</title>
+<html>
+<head>
+  <title>Upload Files</title>
+  <script>
+    async function uploadForm(formId, messageId) {
+      const form = document.getElementById(formId);
+      const formData = new FormData(form);
+      const project = form.getAttribute('data-project');
+      const isTextOnly = form.getAttribute('data-type') === 'text';
+
+      const url = isTextOnly ? `/upload_text/${project}` : `/upload/${project}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+        const resultText = await response.text();
+        document.getElementById(messageId).innerText = resultText;
+      } catch (err) {
+        document.getElementById(messageId).innerText = 'Upload failed';
+      }
+    }
+  </script>
+</head>
+<body>
 <h1>Upload Files</h1>
 
 <h2>SherlockMode Upload</h2>
-<form method="POST" action="/upload/sherlockmode" enctype="multipart/form-data">
-  <input type="file" name="files" multiple required><br><br>
+<form id="form-sm" data-project="sherlockmode" enctype="multipart/form-data">
+  <input type="file" name="files" multiple><br><br>
   <textarea name="description" placeholder="Enter text for content_sm.json" rows="4" cols="50"></textarea><br><br>
-  <input type="submit" value="Upload to SherlockMode">
+  <button type="button" onclick="uploadForm('form-sm', 'msg-sm')">Upload Files + Text</button>
 </form>
+<br>
+<form id="form-sm-text" data-project="sherlockmode" data-type="text">
+  <textarea name="description" placeholder="Only text upload (content_sm.json)" rows="2" cols="50"></textarea><br>
+  <button type="button" onclick="uploadForm('form-sm-text', 'msg-sm')">Upload Text Only</button>
+</form>
+<p id="msg-sm" style="color: green;"></p>
 
 <h2>GitaSahasram Upload</h2>
-<form method="POST" action="/upload/gitasahasram" enctype="multipart/form-data">
-  <input type="file" name="files" multiple required><br><br>
+<form id="form-gs" data-project="gitasahasram" enctype="multipart/form-data">
+  <input type="file" name="files" multiple><br><br>
   <textarea name="description" placeholder="Enter text for content_gs.json" rows="4" cols="50"></textarea><br><br>
-  <input type="submit" value="Upload to GitaSahasram">
+  <button type="button" onclick="uploadForm('form-gs', 'msg-gs')">Upload Files + Text</button>
 </form>
+<br>
+<form id="form-gs-text" data-project="gitasahasram" data-type="text">
+  <textarea name="description" placeholder="Only text upload (content_gs.json)" rows="2" cols="50"></textarea><br>
+  <button type="button" onclick="uploadForm('form-gs-text', 'msg-gs')">Upload Text Only</button>
+</form>
+<p id="msg-gs" style="color: green;"></p>
+
+</body>
+</html>
 '''
 
 @app.route('/', methods=['GET'])
@@ -40,19 +79,17 @@ def home():
 @app.route('/upload/<project>', methods=['POST'])
 def upload_files(project):
     if project not in ['sherlockmode', 'gitasahasram']:
-        return jsonify({'error': 'Invalid project name'}), 400
+        return 'Invalid project name', 400
 
     files = request.files.getlist('files')
     description = request.form.get('description', '').strip()
 
-    if not files or len(files) == 0:
-        return jsonify({'error': 'No files provided'}), 400
-
     saved_files = []
     for file in files:
-        filepath = os.path.join(BASE_UPLOAD_DIR, project, file.filename)
-        file.save(filepath)
-        saved_files.append(file.filename)
+        if file.filename:
+            filepath = os.path.join(BASE_UPLOAD_DIR, project, file.filename)
+            file.save(filepath)
+            saved_files.append(file.filename)
 
     if description:
         content_filename = 'content_sm.json' if project == 'sherlockmode' else 'content_gs.json'
@@ -60,7 +97,23 @@ def upload_files(project):
         with open(content_path, 'w', encoding='utf-8') as f:
             json.dump({'text': description}, f, ensure_ascii=False, indent=2)
 
-    return f"Uploaded files to {project}: {', '.join(saved_files)}. Text saved."
+    return f"{project.capitalize()} data uploaded"
+
+@app.route('/upload_text/<project>', methods=['POST'])
+def upload_text_only(project):
+    if project not in ['sherlockmode', 'gitasahasram']:
+        return 'Invalid project name', 400
+
+    description = request.form.get('description', '').strip()
+    if not description:
+        return 'No text provided', 400
+
+    content_filename = 'content_sm.json' if project == 'sherlockmode' else 'content_gs.json'
+    content_path = os.path.join(BASE_UPLOAD_DIR, project, content_filename)
+    with open(content_path, 'w', encoding='utf-8') as f:
+        json.dump({'text': description}, f, ensure_ascii=False, indent=2)
+
+    return f"{project.capitalize()} text uploaded"
 
 @app.route('/delete/<project>', methods=['POST'])
 def delete_file(project):
