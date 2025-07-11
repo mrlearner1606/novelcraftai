@@ -91,12 +91,14 @@ def upload_files(project):
             saved_files.append(filename)
 
     if description:
-        content_filename = 'content_sm.json' if project == 'sherlockmode' else 'content_gs.json'
-        content_path = os.path.join(BASE_UPLOAD_DIR, project, content_filename)
+        content_path = os.path.join(BASE_UPLOAD_DIR, project, 'content.json')
         with open(content_path, 'w', encoding='utf-8') as f:
-            json.dump({'text': description}, f, ensure_ascii=False, indent=2)
+            f.write(description)
 
-    return f"{project.capitalize()} data uploaded"
+    return f"{project.capitalize()} data uploaded. " + (
+        f"<a href='/files/{project}/thumbnail.jpg' target='_blank'>Download thumbnail.jpg</a>" if 'thumbnail.jpg' in saved_files else ""
+    )
+
 
 
 @app.route('/upload_text/<project>', methods=['POST'])
@@ -108,12 +110,12 @@ def upload_text_only(project):
     if not description:
         return 'No text provided', 400
 
-    content_filename = 'content_sm.json' if project == 'sherlockmode' else 'content_gs.json'
-    content_path = os.path.join(BASE_UPLOAD_DIR, project, content_filename)
+    content_path = os.path.join(BASE_UPLOAD_DIR, project, 'content.json')
     with open(content_path, 'w', encoding='utf-8') as f:
-        json.dump({'text': description}, f, ensure_ascii=False, indent=2)
+        f.write(description)
 
     return f"{project.capitalize()} text uploaded"
+
 
 @app.route('/delete/<project>', methods=['POST'])
 def delete_file(project):
