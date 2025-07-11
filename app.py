@@ -49,7 +49,7 @@ UPLOAD_PAGE_HTML = '''
 <h2>SherlockMode</h2>
 <form id="form-sm" data-project="sherlockmode" enctype="multipart/form-data">
   <input type="file" name="files" multiple><br><br>
-  <textarea name="description" placeholder="Upload text (optional)" rows="4" cols="50"></textarea><br><br>
+  <textarea name="description" placeholder="Gets saved as content.json" rows="4" cols="50"></textarea><br><br>
   <button type="button" onclick="uploadForm('form-sm', 'msg-sm')">Upload</button>
 </form>
 <p id="msg-sm" style="color: green;"></p>
@@ -57,7 +57,7 @@ UPLOAD_PAGE_HTML = '''
 <h2>GitaSahasram</h2>
 <form id="form-gs" data-project="gitasahasram" enctype="multipart/form-data">
   <input type="file" name="files" multiple><br><br>
-  <textarea name="description" placeholder="Upload text (optional)" rows="4" cols="50"></textarea><br><br>
+  <textarea name="description" placeholder="Gets saved as content.json" rows="4" cols="50"></textarea><br><br>
   <button type="button" onclick="uploadForm('form-gs', 'msg-gs')">Upload</button>
 </form>
 <p id="msg-gs" style="color: green;"></p>
