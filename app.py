@@ -81,9 +81,14 @@ def upload_files(project):
     saved_files = []
     for file in files:
         if file.filename:
-            filepath = os.path.join(BASE_UPLOAD_DIR, project, file.filename)
+            filename = file.filename
+            ext = os.path.splitext(filename)[1].lower()
+            if ext == '.jpg':
+                filename = 'thumbnail.jpg'
+
+            filepath = os.path.join(BASE_UPLOAD_DIR, project, filename)
             file.save(filepath)
-            saved_files.append(file.filename)
+            saved_files.append(filename)
 
     if description:
         content_filename = 'content_sm.json' if project == 'sherlockmode' else 'content_gs.json'
@@ -92,6 +97,7 @@ def upload_files(project):
             json.dump({'text': description}, f, ensure_ascii=False, indent=2)
 
     return f"{project.capitalize()} data uploaded"
+
 
 @app.route('/upload_text/<project>', methods=['POST'])
 def upload_text_only(project):
