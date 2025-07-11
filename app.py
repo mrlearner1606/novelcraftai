@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template_string
 import os
 import json
+from PIL import Image
 
 app = Flask(__name__)
 SECRET_TOKEN = 'mysecrettoken'
 
 BASE_UPLOAD_DIR = 'uploads'
-MAX_SIZE_MB = 10
+MAX_SIZE_MB = 20
 app.config['MAX_CONTENT_LENGTH'] = MAX_SIZE_MB * 1024 * 1024
 
 for folder in ['sherlockmode', 'gitasahasram']:
@@ -83,12 +84,29 @@ def upload_files(project):
         if file.filename:
             filename = file.filename
             ext = os.path.splitext(filename)[1].lower()
-            if ext == '.jpg':
+            save_dir = os.path.join(BASE_UPLOAD_DIR, project)
+            if ext == '.png':
+                # Save PNG temporarily
+                temp_path = os.path.join(save_dir, 'temp_upload.png')
+                file.save(temp_path)
+                # Convert to JPG and rename to thumbnail.jpg
+                with Image.open(temp_path) as img:
+                    rgb_img = img.convert('RGB')
+                    jpg_path = os.path.join(save_dir, 'thumbnail.jpg')
+                    rgb_img.save(jpg_path, 'JPEG')
+                os.remove(temp_path)
+                saved_files.append('thumbnail.jpg')
+            elif ext == '.jpg':
+                # Save directly as thumbnail.jpg
                 filename = 'thumbnail.jpg'
-
-            filepath = os.path.join(BASE_UPLOAD_DIR, project, filename)
-            file.save(filepath)
-            saved_files.append(filename)
+                filepath = os.path.join(save_dir, filename)
+                file.save(filepath)
+                saved_files.append(filename)
+            else:
+                # Save other files as-is
+                filepath = os.path.join(save_dir, filename)
+                file.save(filepath)
+                saved_files.append(filename)
 
     if description:
         content_path = os.path.join(BASE_UPLOAD_DIR, project, 'content.json')
