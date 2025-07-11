@@ -22,9 +22,7 @@ UPLOAD_PAGE_HTML = '''
       const form = document.getElementById(formId);
       const formData = new FormData(form);
       const project = form.getAttribute('data-project');
-      const isTextOnly = form.getAttribute('data-type') === 'text';
-
-      const url = isTextOnly ? `/upload_text/${project}` : `/upload/${project}`;
+      const url = `/upload/${project}`;
 
       try {
         const response = await fetch(url, {
@@ -33,6 +31,12 @@ UPLOAD_PAGE_HTML = '''
         });
         const resultText = await response.text();
         document.getElementById(messageId).innerText = resultText;
+
+        // Clear textarea and file input
+        form.querySelector('textarea').value = '';
+        if (form.querySelector('input[type="file"]')) {
+          form.querySelector('input[type="file"]').value = '';
+        }
       } catch (err) {
         document.getElementById(messageId).innerText = 'Upload failed';
       }
@@ -40,31 +44,21 @@ UPLOAD_PAGE_HTML = '''
   </script>
 </head>
 <body>
-<h1>Upload Files</h1>
+<h1>Upload Panel</h1>
 
-<h2>SherlockMode Upload</h2>
+<h2>SherlockMode</h2>
 <form id="form-sm" data-project="sherlockmode" enctype="multipart/form-data">
   <input type="file" name="files" multiple><br><br>
-  <textarea name="description" placeholder="Enter text for content_sm.json" rows="4" cols="50"></textarea><br><br>
-  <button type="button" onclick="uploadForm('form-sm', 'msg-sm')">Upload Files + Text</button>
-</form>
-<br>
-<form id="form-sm-text" data-project="sherlockmode" data-type="text">
-  <textarea name="description" placeholder="Only text upload (content_sm.json)" rows="2" cols="50"></textarea><br>
-  <button type="button" onclick="uploadForm('form-sm-text', 'msg-sm')">Upload Text Only</button>
+  <textarea name="description" placeholder="Upload text (optional)" rows="4" cols="50"></textarea><br><br>
+  <button type="button" onclick="uploadForm('form-sm', 'msg-sm')">Upload</button>
 </form>
 <p id="msg-sm" style="color: green;"></p>
 
-<h2>GitaSahasram Upload</h2>
+<h2>GitaSahasram</h2>
 <form id="form-gs" data-project="gitasahasram" enctype="multipart/form-data">
   <input type="file" name="files" multiple><br><br>
-  <textarea name="description" placeholder="Enter text for content_gs.json" rows="4" cols="50"></textarea><br><br>
-  <button type="button" onclick="uploadForm('form-gs', 'msg-gs')">Upload Files + Text</button>
-</form>
-<br>
-<form id="form-gs-text" data-project="gitasahasram" data-type="text">
-  <textarea name="description" placeholder="Only text upload (content_gs.json)" rows="2" cols="50"></textarea><br>
-  <button type="button" onclick="uploadForm('form-gs-text', 'msg-gs')">Upload Text Only</button>
+  <textarea name="description" placeholder="Upload text (optional)" rows="4" cols="50"></textarea><br><br>
+  <button type="button" onclick="uploadForm('form-gs', 'msg-gs')">Upload</button>
 </form>
 <p id="msg-gs" style="color: green;"></p>
 
