@@ -87,9 +87,7 @@ UPLOAD_PAGE_HTML = '''
         const resultText = await response.text();
         document.getElementById(messageId).innerText = resultText;
         form.querySelector('textarea').value = '';
-        if (form.querySelector('input[type="file"]')) {
-          form.querySelector('input[name="files"]').value = '';
-        }
+        form.querySelector('input[name="files"]').value = '';
       } catch (err) {
         document.getElementById(messageId).innerText = 'Upload failed';
       }
@@ -101,42 +99,58 @@ UPLOAD_PAGE_HTML = '''
       });
     }
 
-    function handleTxtUpload(event, containerId) {
+    async function uploadTxtFile(event, project, containerId, messageId) {
       const file = event.target.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const lines = e.target.result.split('\\n');
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
-        lines.forEach((line, index) => {
-          if (!line.trim()) return;
-          const div = document.createElement('div');
-          div.className = 'line-item';
-          div.innerHTML = `
-            <input type="radio" name="line-${containerId}" onclick="this.closest('.line-item').remove()">
-            <span class="line-text">${line}</span>
-            <button onclick="copyText('${line.replace(/'/g, "\\'")}')">Copy</button>
-          `;
-          container.appendChild(div);
-        });
-      };
-      reader.readAsText(file);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`/upload_txt/${project}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const msg = await response.text();
+      document.getElementById(messageId).innerText = msg;
+
+      loadLines(project, containerId);
     }
+
+    async function loadLines(project, containerId) {
+      const response = await fetch(`/get_lines/${project}`);
+      const lines = await response.json();
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      lines.forEach((line) => {
+        const div = document.createElement('div');
+        div.className = 'line-item';
+        div.innerHTML = `
+          <input type="radio" name="line-${containerId}" onclick="this.closest('.line-item').remove()">
+          <span class="line-text">${line}</span>
+          <button onclick="copyText('${line.replace(/'/g, "\\'")}')">Copy</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.onload = () => {
+      loadLines('sherlockmode', 'lines-sm');
+      loadLines('gitasahasram', 'lines-gs');
+    };
   </script>
 </head>
 <body>
 <h1>Upload Panel</h1>
 
-<!-- SherlockMode Section -->
 <h2>SherlockMode</h2>
 <form id="form-sm" data-project="sherlockmode" enctype="multipart/form-data">
   <input type="file" name="files" multiple><br>
   <div style="display: flex; justify-content: space-between;">
     <textarea name="description" placeholder="Gets saved as content.json" rows="8"></textarea>
     <div class="right-half">
-      <input type="file" accept=".txt" onchange="handleTxtUpload(event, 'lines-sm')"><br>
+      <input type="file" accept=".txt" onchange="uploadTxtFile(event, 'sherlockmode', 'lines-sm', 'msg-sm')"><br>
       <div id="lines-sm"></div>
     </div>
   </div>
@@ -144,14 +158,13 @@ UPLOAD_PAGE_HTML = '''
 </form>
 <p id="msg-sm"></p>
 
-<!-- GitaSahasram Section -->
 <h2>GitaSahasram</h2>
 <form id="form-gs" data-project="gitasahasram" enctype="multipart/form-data">
   <input type="file" name="files" multiple><br>
   <div style="display: flex; justify-content: space-between;">
     <textarea name="description" placeholder="Gets saved as content.json" rows="8"></textarea>
     <div class="right-half">
-      <input type="file" accept=".txt" onchange="handleTxtUpload(event, 'lines-gs')"><br>
+      <input type="file" accept=".txt" onchange="uploadTxtFile(event, 'gitasahasram', 'lines-gs', 'msg-gs')"><br>
       <div id="lines-gs"></div>
     </div>
   </div>
@@ -162,7 +175,6 @@ UPLOAD_PAGE_HTML = '''
 </body>
 </html>
 '''
-
 
 @app.route('/', methods=['GET'])
 def home():
@@ -183,10 +195,8 @@ def upload_files(project):
             ext = os.path.splitext(filename)[1].lower()
             save_dir = os.path.join(BASE_UPLOAD_DIR, project)
             if ext == '.png':
-                # Save PNG temporarily
                 temp_path = os.path.join(save_dir, 'temp_upload.png')
                 file.save(temp_path)
-                # Convert to JPG and rename to thumbnail.jpg
                 with Image.open(temp_path) as img:
                     rgb_img = img.convert('RGB')
                     jpg_path = os.path.join(save_dir, 'thumbnail.jpg')
@@ -194,13 +204,11 @@ def upload_files(project):
                 os.remove(temp_path)
                 saved_files.append('thumbnail.jpg')
             elif ext == '.jpg':
-                # Save directly as thumbnail.jpg
                 filename = 'thumbnail.jpg'
                 filepath = os.path.join(save_dir, filename)
                 file.save(filepath)
                 saved_files.append(filename)
             else:
-                # Save other files as-is
                 filepath = os.path.join(save_dir, filename)
                 file.save(filepath)
                 saved_files.append(filename)
@@ -210,24 +218,33 @@ def upload_files(project):
         with open(content_path, 'w', encoding='utf-8') as f:
             f.write(description)
 
-    return f"{project.capitalize()} data uploaded. "
+    return f"{project.capitalize()} data uploaded."
 
-
-@app.route('/upload_text/<project>', methods=['POST'])
-def upload_text_only(project):
+@app.route('/upload_txt/<project>', methods=['POST'])
+def upload_txt(project):
     if project not in ['sherlockmode', 'gitasahasram']:
-        return 'Invalid project name', 400
+        return 'Invalid project', 400
 
-    description = request.form.get('description', '').strip()
-    if not description:
-        return 'No text provided', 400
+    file = request.files.get('file')
+    if not file or not file.filename.endswith('.txt'):
+        return 'Invalid file', 400
 
-    content_path = os.path.join(BASE_UPLOAD_DIR, project, 'content.json')
-    with open(content_path, 'w', encoding='utf-8') as f:
-        f.write(description)
+    save_path = os.path.join(BASE_UPLOAD_DIR, project, 'lines.txt')
+    file.save(save_path)
+    return 'TXT uploaded', 200
 
-    return f"{project.capitalize()} text uploaded"
+@app.route('/get_lines/<project>', methods=['GET'])
+def get_lines(project):
+    if project not in ['sherlockmode', 'gitasahasram']:
+        return jsonify([])
 
+    file_path = os.path.join(BASE_UPLOAD_DIR, project, 'lines.txt')
+    if not os.path.exists(file_path):
+        return jsonify([])
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        lines = [line.strip() for line in f.readlines() if line.strip()]
+    return jsonify(lines)
 
 @app.route('/delete/<project>', methods=['POST'])
 def delete_file(project):
