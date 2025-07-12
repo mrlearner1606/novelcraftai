@@ -71,6 +71,11 @@ UPLOAD_PAGE_HTML = '''
       flex-grow: 1;
       margin-right: 10px;
     }
+    .counter {
+      font-size: 16px;
+      margin-top: 5px;
+      color: #00ffcc;
+    }
   </style>
   <script>
     async function uploadForm(formId, messageId) {
@@ -121,21 +126,24 @@ UPLOAD_PAGE_HTML = '''
       const response = await fetch(`/get_lines/${project}`);
       const lines = await response.json();
       const container = document.getElementById(containerId);
+      const counter = document.getElementById(`counter-${containerId}`);
       container.innerHTML = '';
 
       lines.forEach((line) => {
         const div = document.createElement('div');
         div.className = 'line-item';
         div.innerHTML = `
-          <input type="radio" name="line-${containerId}" onclick="removeLine('${project}', \`${line}\`, this)">
+          <input type="radio" name="line-${containerId}" onclick="removeLine('${project}', \`${line}\`, this, '${containerId}')">
           <span class="line-text">${line}</span>
           <button onclick="copyText(\`${line}\`)">Copy</button>
         `;
         container.appendChild(div);
       });
+
+      counter.innerText = lines.length;
     }
 
-    async function removeLine(project, line, radioEl) {
+    async function removeLine(project, line, radioEl, containerId) {
       const res = await fetch(`/remove_line/${project}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -144,6 +152,9 @@ UPLOAD_PAGE_HTML = '''
 
       if (res.ok) {
         radioEl.closest('.line-item').remove();
+        const counter = document.getElementById(`counter-${containerId}`);
+        let current = parseInt(counter.innerText);
+        counter.innerText = current > 0 ? current - 1 : 0;
       } else {
         alert("Failed to remove line.");
       }
@@ -165,6 +176,7 @@ UPLOAD_PAGE_HTML = '''
     <textarea name="description" placeholder="Gets saved as content.json" rows="8"></textarea>
     <div class="right-half">
       <input type="file" accept=".txt" onchange="uploadTxtFile(event, 'sherlockmode', 'lines-sm', 'msg-sm')"><br>
+      <h3>Remaining Topics: <span class="counter" id="counter-lines-sm">0</span></h3>
       <div id="lines-sm"></div>
     </div>
   </div>
@@ -179,6 +191,7 @@ UPLOAD_PAGE_HTML = '''
     <textarea name="description" placeholder="Gets saved as content.json" rows="8"></textarea>
     <div class="right-half">
       <input type="file" accept=".txt" onchange="uploadTxtFile(event, 'gitasahasram', 'lines-gs', 'msg-gs')"><br>
+      <h3>Remaining Topics: <span class="counter" id="counter-lines-gs">0</span></h3>
       <div id="lines-gs"></div>
     </div>
   </div>
