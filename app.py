@@ -18,6 +18,38 @@ UPLOAD_PAGE_HTML = '''
 <html>
 <head>
   <title>Upload Files</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input[type="file"],
+    textarea,
+    button {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 8px;
+    }
+    textarea {
+      width: 100%;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #333;
+    }
+    h1, h2 {
+      color: #ffcc00;
+    }
+    p {
+      color: #00ff99;
+    }
+  </style>
   <script>
     async function uploadForm(formId, messageId) {
       const form = document.getElementById(formId);
@@ -33,7 +65,6 @@ UPLOAD_PAGE_HTML = '''
         const resultText = await response.text();
         document.getElementById(messageId).innerText = resultText;
 
-        // Clear textarea and file input
         form.querySelector('textarea').value = '';
         if (form.querySelector('input[type="file"]')) {
           form.querySelector('input[type="file"]').value = '';
@@ -53,7 +84,7 @@ UPLOAD_PAGE_HTML = '''
   <textarea name="description" placeholder="Gets saved as content.json" rows="4" cols="50"></textarea><br><br>
   <button type="button" onclick="uploadForm('form-sm', 'msg-sm')">Upload</button>
 </form>
-<p id="msg-sm" style="color: green;"></p>
+<p id="msg-sm"></p>
 
 <h2>GitaSahasram</h2>
 <form id="form-gs" data-project="gitasahasram" enctype="multipart/form-data">
@@ -61,11 +92,12 @@ UPLOAD_PAGE_HTML = '''
   <textarea name="description" placeholder="Gets saved as content.json" rows="4" cols="50"></textarea><br><br>
   <button type="button" onclick="uploadForm('form-gs', 'msg-gs')">Upload</button>
 </form>
-<p id="msg-gs" style="color: green;"></p>
+<p id="msg-gs"></p>
 
 </body>
 </html>
 '''
+
 
 @app.route('/', methods=['GET'])
 def home():
