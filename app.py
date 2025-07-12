@@ -127,12 +127,26 @@ UPLOAD_PAGE_HTML = '''
         const div = document.createElement('div');
         div.className = 'line-item';
         div.innerHTML = `
-          <input type="radio" name="line-${containerId}" onclick="this.closest('.line-item').remove()">
+          <input type="radio" name="line-${containerId}" onclick="removeLine('${project}', \`${line}\`, this)">
           <span class="line-text">${line}</span>
-          <button onclick="copyText('${line.replace(/'/g, "\\'")}')">Copy</button>
+          <button onclick="copyText(\`${line}\`)">Copy</button>
         `;
         container.appendChild(div);
       });
+    }
+
+    async function removeLine(project, line, radioEl) {
+      const res = await fetch(`/remove_line/${project}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ line: line })
+      });
+
+      if (res.ok) {
+        radioEl.closest('.line-item').remove();
+      } else {
+        alert("Failed to remove line.");
+      }
     }
 
     window.onload = () => {
@@ -245,6 +259,30 @@ def get_lines(project):
     with open(file_path, 'r', encoding='utf-8') as f:
         lines = [line.strip() for line in f.readlines() if line.strip()]
     return jsonify(lines)
+
+@app.route('/remove_line/<project>', methods=['POST'])
+def remove_line(project):
+    if project not in ['sherlockmode', 'gitasahasram']:
+        return jsonify({'error': 'Invalid project'}), 400
+
+    data = request.get_json()
+    line_to_remove = data.get('line', '').strip()
+    if not line_to_remove:
+        return jsonify({'error': 'No line provided'}), 400
+
+    file_path = os.path.join(BASE_UPLOAD_DIR, project, 'lines.txt')
+    if not os.path.exists(file_path):
+        return jsonify({'error': 'lines.txt not found'}), 404
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        lines = [line.strip() for line in f.readlines()]
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        for line in lines:
+            if line.strip() != line_to_remove:
+                f.write(line + '\n')
+
+    return jsonify({'status': 'removed', 'line': line_to_remove})
 
 @app.route('/delete/<project>', methods=['POST'])
 def delete_file(project):
