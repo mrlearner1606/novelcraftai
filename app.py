@@ -33,9 +33,18 @@ UPLOAD_PAGE_HTML = '''
       border: 1px solid #555;
       border-radius: 4px;
       padding: 8px;
+      margin: 5px 0;
     }
     textarea {
-      width: 100%;
+      width: 48%;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .right-half {
+      width: 48%;
+      display: inline-block;
+      vertical-align: top;
+      padding-left: 10px;
     }
     button {
       cursor: pointer;
@@ -48,6 +57,19 @@ UPLOAD_PAGE_HTML = '''
     }
     p {
       color: #00ff99;
+    }
+    .line-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      align-items: center;
+    }
+    .line-item input[type="radio"] {
+      margin-right: 10px;
+    }
+    .line-text {
+      flex-grow: 1;
+      margin-right: 10px;
     }
   </style>
   <script>
@@ -64,32 +86,75 @@ UPLOAD_PAGE_HTML = '''
         });
         const resultText = await response.text();
         document.getElementById(messageId).innerText = resultText;
-
         form.querySelector('textarea').value = '';
         if (form.querySelector('input[type="file"]')) {
-          form.querySelector('input[type="file"]').value = '';
+          form.querySelector('input[name="files"]').value = '';
         }
       } catch (err) {
         document.getElementById(messageId).innerText = 'Upload failed';
       }
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied: " + text);
+      });
+    }
+
+    function handleTxtUpload(event, containerId) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const lines = e.target.result.split('\\n');
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        lines.forEach((line, index) => {
+          if (!line.trim()) return;
+          const div = document.createElement('div');
+          div.className = 'line-item';
+          div.innerHTML = `
+            <input type="radio" name="line-${containerId}" onclick="this.closest('.line-item').remove()">
+            <span class="line-text">${line}</span>
+            <button onclick="copyText('${line.replace(/'/g, "\\'")}')">Copy</button>
+          `;
+          container.appendChild(div);
+        });
+      };
+      reader.readAsText(file);
     }
   </script>
 </head>
 <body>
 <h1>Upload Panel</h1>
 
+<!-- SherlockMode Section -->
 <h2>SherlockMode</h2>
 <form id="form-sm" data-project="sherlockmode" enctype="multipart/form-data">
-  <input type="file" name="files" multiple><br><br>
-  <textarea name="description" placeholder="Gets saved as content.json" rows="4" cols="50"></textarea><br><br>
+  <input type="file" name="files" multiple><br>
+  <div style="display: flex; justify-content: space-between;">
+    <textarea name="description" placeholder="Gets saved as content.json" rows="8"></textarea>
+    <div class="right-half">
+      <input type="file" accept=".txt" onchange="handleTxtUpload(event, 'lines-sm')"><br>
+      <div id="lines-sm"></div>
+    </div>
+  </div>
   <button type="button" onclick="uploadForm('form-sm', 'msg-sm')">Upload</button>
 </form>
 <p id="msg-sm"></p>
 
+<!-- GitaSahasram Section -->
 <h2>GitaSahasram</h2>
 <form id="form-gs" data-project="gitasahasram" enctype="multipart/form-data">
-  <input type="file" name="files" multiple><br><br>
-  <textarea name="description" placeholder="Gets saved as content.json" rows="4" cols="50"></textarea><br><br>
+  <input type="file" name="files" multiple><br>
+  <div style="display: flex; justify-content: space-between;">
+    <textarea name="description" placeholder="Gets saved as content.json" rows="8"></textarea>
+    <div class="right-half">
+      <input type="file" accept=".txt" onchange="handleTxtUpload(event, 'lines-gs')"><br>
+      <div id="lines-gs"></div>
+    </div>
+  </div>
   <button type="button" onclick="uploadForm('form-gs', 'msg-gs')">Upload</button>
 </form>
 <p id="msg-gs"></p>
