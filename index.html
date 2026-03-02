@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovelCraft AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#08080f;--bg2:#0d0d18;--surface:#111120;--surface2:#161628;--border:#222238;--gold:#c9a84c;--gold-dim:#8a6f30;--coral:#d4735a;--teal:#4cb8a0;--text:#e8e0d0;--text-dim:#9a9080;--text-faint:#4a4540;--editor-bg:#090910;--success:#5cb87a;--danger:#c05050;--highlight:#1e1e38;--shadow:0 8px 32px rgba(0,0,0,0.6)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;font-size:16px;overflow:hidden}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--gold-dim)}
+.screen{display:none;width:100%;height:100vh}.screen.active{display:flex}
+
+/* ── LOGIN ── */
+#screen-login{flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 50%,#1a1025 0%,var(--bg) 60%),radial-gradient(ellipse at 80% 20%,#0d1a20 0%,transparent 50%);position:relative;overflow:hidden}
+#screen-login::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(201,168,76,.03) 40px,rgba(201,168,76,.03) 41px);pointer-events:none}
+.login-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);top:-100px;left:-100px;pointer-events:none;animation:glowPulse 4s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.5}50%{opacity:1}}
+.login-box{position:relative;z-index:1;width:520px;max-height:95vh;overflow-y:auto;padding:40px 48px;background:rgba(13,13,24,.95);border:1px solid var(--border);border-top:2px solid var(--gold);backdrop-filter:blur(20px);box-shadow:var(--shadow),0 0 80px rgba(201,168,76,.05);animation:fadeUp .6s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.login-logo{text-align:center;margin-bottom:32px}.login-logo .icon{font-size:48px;display:block;margin-bottom:12px}
+.login-logo h1{font-family:'Playfair Display',serif;font-size:30px;color:var(--gold);letter-spacing:.5px}
+.login-logo p{color:var(--text-dim);font-size:14px;margin-top:6px}
+.login-step{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;margin-bottom:22px;font-size:13px;line-height:1.8;color:var(--text-dim)}
+.login-step strong{color:var(--gold);display:block;margin-bottom:4px}
+.login-step code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg);padding:2px 6px;border-radius:3px;color:var(--teal)}
+.login-step a{color:var(--gold);text-decoration:none}.login-step a:hover{text-decoration:underline}
+.form-group{margin-bottom:16px}.form-group label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.form-group input{width:100%;padding:12px 16px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;transition:border-color .2s}
+.form-group input:focus{border-color:var(--gold)}.form-group input::placeholder{color:var(--text-faint)}
+.btn-primary{width:100%;padding:14px;cursor:pointer;background:var(--gold);color:#08080f;font-family:'Playfair Display',serif;font-size:16px;font-weight:600;border:none;letter-spacing:.5px;transition:all .2s}
+.btn-primary:hover{background:#d4b05a;transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,.3)}.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.login-error{color:var(--coral);font-size:13px;margin-top:12px;text-align:center;display:none}
+.byop-block{background:rgba(76,184,160,.05);border:1px solid rgba(76,184,160,.25);border-left:3px solid var(--teal);padding:16px;margin-bottom:18px}
+.byop-block-title{font-size:13px;color:var(--teal);font-weight:600;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.byop-block-desc{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:12px}
+.byop-connect-btn{width:100%;padding:11px;cursor:pointer;background:var(--teal);color:#08080f;font-family:'Playfair Display',serif;font-size:15px;font-weight:600;border:none;letter-spacing:.3px;transition:all .2s}
+.byop-connect-btn:hover{background:#5dccb2;transform:translateY(-1px);box-shadow:0 4px 20px rgba(76,184,160,.3)}
+.byop-status-bar{margin-top:10px;padding:9px 12px;background:rgba(76,184,160,.1);border:1px solid rgba(76,184,160,.3);font-size:12px;color:var(--teal);display:flex;align-items:center;justify-content:space-between}
+.byop-status-bar.hidden{display:none}
+.byop-disconnect{padding:4px 12px;cursor:pointer;background:transparent;border:1px solid var(--danger);color:var(--danger);font-size:11px;transition:all .2s}
+.byop-disconnect:hover{background:var(--danger);color:#fff}
+.byop-or{text-align:center;margin:10px 0;font-size:11px;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase;position:relative}
+.byop-or::before,.byop-or::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+.byop-or::before{left:0}.byop-or::after{right:0}
+
+/* ── GITHUB SIGN IN BUTTON ── */
+.github-signin-btn{width:100%;padding:13px 16px;cursor:pointer;background:#238636;color:#fff;font-family:'Playfair Display',serif;font-size:16px;font-weight:600;border:1px solid #2ea043;letter-spacing:.3px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.github-signin-btn:hover{background:#2ea043;transform:translateY(-1px);box-shadow:0 4px 20px rgba(35,134,54,.4)}
+.github-signin-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.topbar-brand{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)}
+.user-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--text-dim)}
+.user-badge img{width:22px;height:22px;border-radius:50%}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn-sm{padding:7px 16px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:14px;transition:all .2s}
+.btn-sm:hover{border-color:var(--gold);color:var(--gold)}.btn-sm.accent{background:var(--gold);color:#08080f;border-color:var(--gold);font-weight:600}.btn-sm.accent:hover{background:#d4b05a}.btn-sm.danger{border-color:var(--danger);color:var(--danger)}.btn-sm.danger:hover{background:var(--danger);color:#fff}
+
+/* ── LIBRARY LIST ── */
+.list-main{flex:1;overflow-y:auto;padding:32px 40px}
+.list-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px}
+.list-header h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--text)}.list-header p{color:var(--text-dim);font-size:14px}
+.novels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.novel-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold-dim);padding:22px;cursor:pointer;transition:all .2s;position:relative;animation:fadeUp .4s ease}
+.novel-card:hover{border-top-color:var(--gold);box-shadow:var(--shadow);transform:translateY(-2px);background:var(--surface2)}
+.novel-card-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--text);margin-bottom:4px}
+.novel-card-author{font-size:13px;color:var(--text-dim);font-style:italic;margin-bottom:10px}
+.novel-card-meta{display:flex;gap:14px;font-size:12px;color:var(--text-faint);margin-bottom:12px}
+.novel-card-genre{display:inline-block;padding:2px 10px;background:var(--bg2);border:1px solid var(--border);font-size:11px;color:var(--gold-dim);letter-spacing:.5px;text-transform:uppercase}
+.card-actions{position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:opacity .2s}
+.novel-card:hover .card-actions{opacity:1}
+.card-btn{width:26px;height:26px;border:1px solid var(--border);background:var(--bg);color:var(--text-dim);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.card-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+.empty-state{text-align:center;padding:80px 40px;color:var(--text-dim);grid-column:1/-1}
+.empty-state .emoji{font-size:56px;display:block;margin-bottom:16px}.empty-state h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);margin-bottom:8px}
+
+/* ── EDITOR TOPBAR ── */
+.editor-topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:50px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px}
+.editor-topbar-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.back-btn{padding:6px 12px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:13px;transition:all .2s;white-space:nowrap}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+.editor-novel-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.editor-novel-meta{font-size:11px;color:var(--text-faint)}
+.topbar-nav{display:flex;align-items:center;gap:2px;flex:1;justify-content:center}
+.topbar-nav-item{display:flex;align-items:center;gap:6px;padding:6px 14px;cursor:pointer;background:transparent;border:1px solid transparent;color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:13px;transition:all .15s;white-space:nowrap;border-radius:0}
+.topbar-nav-item:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
+.topbar-nav-item.active{background:var(--highlight);color:var(--gold);border-color:var(--gold-dim);border-bottom:2px solid var(--gold)}
+.save-status{font-size:12px;color:var(--text-faint);white-space:nowrap}.save-status.saving{color:var(--gold-dim)}.save-status.saved{color:var(--success)}.save-status.error{color:var(--danger)}
+
+/* ── EDITOR BODY ── */
+.editor-body{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.editor-sidebar{width:225px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-section{padding:12px 14px;border-bottom:1px solid var(--border)}
+.sidebar-section-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px}
+.sidebar-field{margin-bottom:8px}.sidebar-field label{font-size:10px;color:var(--text-dim);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.sidebar-field input,.sidebar-field select{width:100%;padding:6px 8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:13px;outline:none;transition:border-color .15s}
+.sidebar-field input:focus,.sidebar-field select:focus{border-color:var(--gold)}.sidebar-field select option{background:var(--surface)}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:6px}
+.stat-item{text-align:center;padding:5px;background:var(--surface);border:1px solid var(--border)}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);display:block}.stat-label{font-size:9px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── CHAPTER LIST ── */
+.chapter-list-wrap{flex:1;overflow-y:auto;padding:8px;min-height:0}
+.chapter-list-header{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 8px}
+.chapter-list-header span{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint)}
+.add-ch-btn{width:22px;height:22px;background:var(--gold);color:#08080f;border:none;cursor:pointer;font-size:14px;font-weight:bold;display:flex;align-items:center;justify-content:center}
+.chapter-item{padding:7px 10px;cursor:pointer;font-size:13px;border:1px solid transparent;margin-bottom:2px;color:var(--text-dim);transition:all .15s;display:flex;align-items:center;gap:6px;min-width:0}
+.chapter-item:hover{background:var(--surface);color:var(--text);border-color:var(--border)}.chapter-item.active{background:var(--highlight);color:var(--gold);border-color:var(--gold-dim)}
+.chapter-item.dragging{opacity:.35}
+.chapter-item.drag-over-top{border-top:2px solid var(--gold)!important}
+.chapter-item.drag-over-bottom{border-bottom:2px solid var(--gold)!important}
+.ch-drag-handle{font-size:11px;color:var(--text-faint);flex-shrink:0;cursor:grab;opacity:0;transition:opacity .15s}
+.chapter-item:hover .ch-drag-handle{opacity:1}
+.ch-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);flex-shrink:0}.ch-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-del{opacity:0;font-size:11px;color:var(--danger);flex-shrink:0}.chapter-item:hover .ch-del{opacity:1}
+
+/* ── SIDEBAR NAV (AI Studio, Cover Art, etc.) ── */
+.sidebar-nav{border-top:1px solid var(--border);flex-shrink:0;padding:8px}
+.sidebar-nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;cursor:pointer;font-size:13px;border:1px solid transparent;margin-bottom:3px;color:var(--text-dim);transition:all .15s;border-radius:0}
+.sidebar-nav-item:hover{background:var(--surface);color:var(--text);border-color:var(--border)}
+.sidebar-nav-item.active{background:var(--highlight);color:var(--gold);border-color:var(--gold-dim)}
+.sidebar-nav-item .nav-icon{font-size:14px;flex-shrink:0}
+.sidebar-nav-item .nav-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── CONTENT AREA ── */
+.editor-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* Content section header (replaces tab bar) */
+.content-section-bar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:44px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
+.content-section-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);display:flex;align-items:center;gap:8px}
+.content-section-actions{display:flex;gap:6px;align-items:center}
+
+/* ── TAB PANES ── */
+.tab-pane{display:none;flex:1;overflow:hidden;flex-direction:column}.tab-pane.active{display:flex}
+
+/* ── WRITE TAB ── */
+.ch-title-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
+.ch-title-bar label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.ch-title-input{flex:1;padding:5px 8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Playfair Display',serif;font-size:14px;outline:none;transition:border-color .15s}
+.ch-title-input:focus{border-color:var(--gold)}.ch-wordcount{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-faint);flex-shrink:0}
+.main-editor{flex:1;overflow-y:auto;outline:none;background:var(--editor-bg);color:var(--text);font-family:'Crimson Pro',serif;font-size:18px;line-height:1.85;padding:36px 80px;border:none;caret-color:var(--gold);white-space:pre-wrap;word-wrap:break-word}
+.main-editor:empty::before{content:attr(data-placeholder);color:var(--text-faint);font-style:italic;pointer-events:none}
+.main-editor strong,.main-editor b{font-weight:700;color:var(--text)}
+.main-editor em,.main-editor i{font-style:italic;color:#d8d0be}
+.main-editor q,.main-editor .dialogue{quotes:'\201C' '\201D'}
+/* ── FORMAT TOOLBAR ── */
+.fmt-toolbar{display:flex;align-items:center;gap:3px;padding:5px 14px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
+.fmt-btn{width:28px;height:26px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.fmt-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--highlight)}
+.fmt-btn.active{background:var(--highlight);border-color:var(--gold-dim);color:var(--gold)}
+.fmt-btn b{font-weight:800;font-size:14px}
+.fmt-btn i{font-style:italic;font-family:'Crimson Pro',serif;font-size:15px}
+.fmt-sep{width:1px;height:18px;background:var(--border);margin:0 4px;flex-shrink:0}
+.ai-toolbar{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.ai-btn{padding:5px 13px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:13px;transition:all .2s;white-space:nowrap}
+.ai-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--highlight)}.ai-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-busy-label{font-size:12px;color:var(--gold-dim);font-style:italic;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* ── IMAGE STRIP ── */
+.img-strip{display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;overflow-x:auto;min-height:52px}
+.img-strip::-webkit-scrollbar{height:4px}
+.img-strip-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;flex-shrink:0}
+.img-thumb{position:relative;flex-shrink:0;width:40px;height:40px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.img-thumb:hover{border-color:var(--gold)}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.img-thumb .th-del{position:absolute;top:1px;right:1px;width:14px;height:14px;background:rgba(192,80,80,.9);color:#fff;border:none;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.img-thumb:hover .th-del{opacity:1}
+.img-thumb .th-ins{position:absolute;bottom:0;left:0;right:0;background:rgba(201,168,76,.9);color:#08080f;font-size:8px;text-align:center;padding:2px;opacity:0;transition:opacity .15s;cursor:pointer;font-weight:600}
+.img-thumb:hover .th-ins{opacity:1}
+.img-strip-empty{font-size:12px;color:var(--text-faint);font-style:italic}
+
+/* ── AI STUDIO ── */
+.ai-studio{display:flex;flex:1;overflow:hidden}
+.ai-tools-panel{width:300px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.ai-tools-header{padding:14px;border-bottom:1px solid var(--border)}.ai-tools-header h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold)}.ai-tools-header p{font-size:12px;color:var(--text-dim);margin-top:2px}
+.ai-tools-list{flex:1;overflow-y:auto;padding:8px}
+.tool-btn{width:100%;padding:9px 12px;cursor:pointer;text-align:left;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:13px;margin-bottom:3px;transition:all .15s;display:flex;align-items:center;gap:8px}
+.tool-btn:hover{background:var(--highlight);border-color:var(--gold-dim);color:var(--text)}.tool-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-custom-wrap{padding:12px;border-top:1px solid var(--border)}
+.ai-custom-wrap label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.ai-custom-wrap textarea{width:100%;height:75px;resize:none;padding:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:13px;outline:none;transition:border-color .15s}
+.ai-custom-wrap textarea:focus{border-color:var(--gold)}
+.model-row{display:flex;align-items:center;gap:8px;margin:7px 0}
+.model-row label{font-size:11px;color:var(--text-dim);flex-shrink:0}
+.model-row select{flex:1;padding:5px 7px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:13px;outline:none}
+.model-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim)}
+.model-pill label{white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.model-pill select{padding:4px 8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;transition:border-color .15s;cursor:pointer}
+.model-pill select:focus{border-color:var(--gold)}
+.ai-output-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ai-output-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-output-header h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold)}.ai-output-actions{display:flex;gap:5px}
+.ai-output-area{flex:1;overflow-y:auto;padding:20px;font-size:16px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+.ai-status{padding:8px 16px;font-size:12px;color:var(--text-dim);border-top:1px solid var(--border);font-style:italic;flex-shrink:0}
+
+/* ── CHARACTERS ── */
+.chars-layout{display:flex;flex:1;overflow:hidden}
+.chars-list-col{width:240px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.chars-list-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.chars-list-header h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold)}.chars-list{flex:1;overflow-y:auto;padding:7px}
+.char-item{padding:9px 10px;cursor:pointer;border:1px solid transparent;margin-bottom:3px;transition:all .15s}
+.char-item:hover{background:var(--surface);border-color:var(--border)}.char-item.active{background:var(--highlight);border-color:var(--gold-dim)}
+.char-item-name{font-size:14px;color:var(--text)}.char-item-role{font-size:11px;color:var(--text-dim);font-style:italic}
+.chars-detail{flex:1;overflow-y:auto;padding:22px}
+.chars-detail h3{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:18px}
+.field-group{margin-bottom:14px}.field-group label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.field-group input,.field-group select,.field-group textarea{width:100%;padding:9px 11px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:15px;outline:none;transition:border-color .15s}
+.field-group input:focus,.field-group select:focus,.field-group textarea:focus{border-color:var(--gold)}.field-group textarea{height:190px;resize:vertical;line-height:1.6}.field-group select option{background:var(--surface)}
+.char-actions{display:flex;gap:7px;margin-top:6px}
+
+/* ── COVER ART ── */
+.cover-layout{display:flex;flex:1;overflow:hidden}
+.cover-controls{width:290px;flex-shrink:0;border-right:1px solid var(--border);padding:18px;overflow-y:auto;background:var(--bg2)}
+.cover-controls h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);margin-bottom:14px}
+.cover-preview{flex:1;display:flex;align-items:center;justify-content:center;background:var(--editor-bg);overflow:hidden}
+.cover-preview img{max-width:100%;max-height:100%;object-fit:contain}
+.cover-placeholder{text-align:center;color:var(--text-faint)}.cover-placeholder span{font-size:64px;display:block;margin-bottom:12px}
+.cover-tabs{display:flex;gap:4px;margin-bottom:12px}
+.cover-tab{flex:1;padding:7px;cursor:pointer;text-align:center;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;transition:all .15s}
+.cover-tab:hover{border-color:var(--gold-dim);color:var(--text)}
+.cover-tab.active{background:var(--highlight);border-color:var(--gold);color:var(--gold)}
+.upload-zone{border:1px dashed var(--border);padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px;width:100%;background:transparent;font-family:'Crimson Pro',serif;display:block;outline:none}
+.upload-zone:hover,.upload-zone:focus{border-color:var(--gold);background:var(--highlight)}
+.upload-zone .uz-icon{font-size:24px;display:block;margin-bottom:5px;pointer-events:none}
+.upload-zone .uz-text{font-size:12px;color:var(--text-dim);pointer-events:none}
+.upload-zone .uz-sub{font-size:10px;color:var(--text-faint);margin-top:3px;pointer-events:none}
+
+/* ── NOTES ── */
+.notes-layout{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.notes-section{flex:1;display:flex;flex-direction:column;border-bottom:1px solid var(--border);min-height:0}
+.notes-section-header{padding:10px 18px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.notes-section-header h3{font-family:'Playfair Display',serif;font-size:14px;color:var(--gold)}
+.notes-textarea{flex:1;resize:none;outline:none;background:var(--editor-bg);color:var(--text);font-family:'Crimson Pro',serif;font-size:16px;line-height:1.7;padding:18px 28px;border:none;caret-color:var(--gold)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{width:460px;background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--gold);padding:30px;animation:fadeUp .3s ease}
+.modal h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold);margin-bottom:18px}.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;z-index:200;padding:11px 18px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);color:var(--text);font-size:14px;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:none;opacity:1}.toast.success{border-left-color:var(--success)}.toast.error{border-left-color:var(--danger)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── EXPORT MODAL ── */
+.export-option-box{margin-top:10px;padding:14px;background:var(--surface2);border:1px solid var(--border)}
+.export-option-box .box-title{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.export-check{display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:8px;font-size:14px;color:var(--text-dim);user-select:none}
+.export-check:last-child{margin-bottom:0}
+.export-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);cursor:pointer}
+.export-check span{transition:color .15s}.export-check:hover span{color:var(--text)}
+.export-hint{font-size:11px;color:var(--text-faint);margin-top:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);line-height:1.6}
+.format-pills{display:flex;gap:6px;margin-bottom:4px}
+.format-pill{flex:1;padding:10px;cursor:pointer;text-align:center;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:13px;transition:all .2s}
+.format-pill:hover{border-color:var(--gold-dim);color:var(--text)}
+.format-pill.selected{background:var(--highlight);border-color:var(--gold);color:var(--gold)}
+.format-pill .pill-icon{font-size:20px;display:block;margin-bottom:4px}
+.format-pill .pill-name{font-weight:600;display:block}
+.format-pill .pill-desc{font-size:11px;color:var(--text-faint);display:block;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="modal-export">
+  <div class="modal" style="width:520px">
+    <h2>📤 Export Novel</h2>
+    <div class="format-pills">
+      <div class="format-pill selected" id="pill-txt" onclick="selectFormat('txt')">
+        <span class="pill-icon">📄</span><span class="pill-name">Plain Text</span><span class="pill-desc">.txt file</span>
+      </div>
+      <div class="format-pill" id="pill-epub" onclick="selectFormat('epub')">
+        <span class="pill-icon">📚</span><span class="pill-name">EPUB</span><span class="pill-desc">For e-readers</span>
+      </div>
+      <div class="format-pill" id="pill-pdf" onclick="selectFormat('pdf')">
+        <span class="pill-icon">🖨️</span><span class="pill-name">PDF</span><span class="pill-desc">For printing</span>
+      </div>
+    </div>
+    <div class="export-option-box" id="epub-pdf-options" style="display:none">
+      <div class="box-title">Include in Export</div>
+      <label class="export-check"><input type="checkbox" id="exp-cover" checked><span>📖 Cover Page — title, author, genre</span></label>
+      <label class="export-check"><input type="checkbox" id="exp-toc" checked><span>📋 Table of Contents</span></label>
+      <label class="export-check"><input type="checkbox" id="exp-synopsis"><span>📝 Synopsis</span></label>
+    </div>
+    <div class="export-hint" id="cover-img-note" style="margin-top:8px;display:none">
+      🖼️ <strong style="color:var(--gold)">Cover image found</strong> — will be embedded automatically.
+    </div>
+    <div class="export-hint" style="margin-top:10px" id="export-format-note">📄 Plain text — clean, simple, works everywhere.</div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeExportModal()">Cancel</button>
+      <button class="btn-sm accent" id="export-go-btn" onclick="doExport()">Export →</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Novel Modal -->
+<div class="modal-overlay" id="modal-new">
+  <div class="modal">
+    <h2>✍️ New Novel</h2>
+    <div class="field-group"><label>Title</label><input id="new-title" placeholder="My Great Novel"/></div>
+    <div class="field-group"><label>Author</label><input id="new-author" placeholder="Your Name"/></div>
+    <div class="field-group"><label>Genre</label>
+      <select id="new-genre"><option>Fantasy</option><option>Sci-Fi</option><option>Mystery</option><option>Thriller</option><option>Romance</option><option>Horror</option><option>Historical Fiction</option><option>Literary Fiction</option><option>Adventure</option><option>Young Adult</option><option>Other</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn-sm accent" onclick="createNovel()">Create Novel →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div class="screen active" id="screen-login">
+  <div class="login-glow"></div>
+  <div class="login-box">
+    <div class="login-logo"><span class="icon">📖</span><h1>NovelCraft AI</h1><p>Write · Create · Publish — Powered by Pollinations AI</p></div>
+
+    <!-- STEP 1: GitHub Sign In -->
+    <div id="gh-step-idle">
+      <div style="font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:14px;line-height:1.6">
+        Sign in with GitHub to save your novels privately.<br>
+        <span style="color:var(--text-faint);font-size:11px">No password stored — uses GitHub's official Device Flow</span>
+      </div>
+      <button class="github-signin-btn" id="gh-signin-btn" onclick="startGithubDeviceFlow()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        Sign in with GitHub
+      </button>
+    </div>
+
+    <!-- STEP 1b: Device code display -->
+    <div id="gh-step-code" style="display:none">
+      <div style="text-align:center;padding:8px 0 16px">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px">Open the link below and enter this code:</div>
+        <div id="gh-user-code" style="font-family:'JetBrains Mono',monospace;font-size:28px;color:var(--gold);letter-spacing:6px;padding:14px;background:var(--surface);border:1px solid var(--gold-dim)">XXXX-XXXX</div>
+        <a id="gh-verify-link" href="https://github.com/login/device" target="_blank">
+          <button class="github-signin-btn" style="margin-top:12px;font-size:14px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            Open GitHub to Authorize →
+          </button>
+        </a>
+        <div id="gh-poll-status" style="margin-top:12px;font-size:12px;color:var(--text-dim);font-style:italic;animation:pulse 1.5s infinite">⏳ Waiting for authorization...</div>
+        <button onclick="cancelDeviceFlow()" style="margin-top:8px;background:none;border:none;color:var(--text-faint);font-size:11px;cursor:pointer;text-decoration:underline">Cancel</button>
+      </div>
+    </div>
+
+    <!-- GitHub Client ID note -->
+    <div id="gh-clientid-wrap" style="margin-top:10px;display:none">
+      <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">GitHub OAuth App Client ID</div>
+      <input type="text" id="gh-client-id" placeholder="e.g. Ov23li..." style="width:100%;padding:8px 12px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;margin-bottom:6px"/>
+      <div style="font-size:11px;color:var(--text-faint);line-height:1.6">
+        Create a free <a href="https://github.com/settings/applications/new" target="_blank" style="color:var(--teal)">GitHub OAuth App</a> → set callback URL to <code style="color:var(--teal)">http://localhost</code> → paste the Client ID above.
+      </div>
+      <button class="btn-primary" style="margin-top:10px" onclick="retryDeviceFlow()">Try Again →</button>
+    </div>
+
+    <!-- Hidden token field (kept for compatibility) -->
+    <input type="hidden" id="gh-token"/>
+
+    <div style="height:1px;background:var(--border);margin:18px 0"></div>
+
+    <!-- STEP 2: Pollinations -->
+    <div style="font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">🤖 Step 2 — AI Engine</div>
+    <div class="byop-block">
+      <div class="byop-block-title">🌸 Pollinations AI (BYOP)</div>
+      <div class="byop-block-desc">One click to connect your AI engine. Uses <code>enter.pollinations.ai</code> — redirects back here automatically.</div>
+      <button class="byop-connect-btn" id="byopConnectBtn" onclick="connectWithPollinations()">🔗 Connect with Pollinations</button>
+      <div class="byop-status-bar hidden" id="byopStatusBar">
+        <span id="byopStatusText">✅ Connected</span>
+        <button class="byop-disconnect" onclick="disconnectBYOP()">Disconnect</button>
+      </div>
+    </div>
+    <div class="byop-or">or enter key manually</div>
+    <div class="form-group" style="margin-bottom:18px">
+      <input type="password" id="pollinations-token" placeholder="Paste key from enter.pollinations.ai" style="width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s"/>
+    </div>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- LIBRARY SCREEN -->
+<div class="screen" id="screen-list" style="flex-direction:column">
+  <div class="topbar">
+    <div class="topbar-brand"><span>📖</span> NovelCraft AI</div>
+    <div class="topbar-right">
+      <div class="user-badge"><img id="user-avatar" src="" alt=""/><span id="user-name"></span></div>
+      <button class="btn-sm accent" onclick="openModal()">+ New Novel</button>
+      <button class="btn-sm" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="list-main">
+    <div class="list-header">
+      <div><h2>Your Library</h2><p id="library-subtitle">Loading...</p></div>
+      <button class="btn-sm" onclick="loadNovels()">↺ Refresh</button>
+    </div>
+    <div class="novels-grid" id="novels-grid">
+      <div class="empty-state"><span class="emoji"><div class="spinner" style="width:40px;height:40px;border-width:3px;margin:auto"></div></span><p style="margin-top:14px">Loading library...</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR SCREEN -->
+<div class="screen" id="screen-editor" style="flex-direction:column">
+  <div class="editor-topbar">
+    <div class="editor-topbar-left">
+      <button class="back-btn" onclick="backToList()">← Library</button>
+      <div>
+        <div class="editor-novel-title" id="ed-novel-title">Novel</div>
+        <div class="editor-novel-meta" id="ed-novel-meta"></div>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <div class="topbar-nav-item" id="nav-ai" onclick="switchSection('ai')">
+        <span>🧠</span><span>AI Studio</span>
+      </div>
+      <div class="topbar-nav-item" id="nav-cover" onclick="switchSection('cover')">
+        <span>🎨</span><span>Cover Art</span>
+      </div>
+      <div class="topbar-nav-item" id="nav-characters" onclick="switchSection('characters')">
+        <span>👥</span><span>Characters</span>
+      </div>
+      <div class="topbar-nav-item" id="nav-notes" onclick="switchSection('notes')">
+        <span>📋</span><span>Notes &amp; Synopsis</span>
+      </div>
+    </div>
+    <div class="save-status" id="save-status">All saved ✓</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn-sm" onclick="openExportModal()">📤 Export</button>
+      <button class="btn-sm accent" onclick="saveNowManual()">💾 Save</button>
+    </div>
+  </div>
+
+  <div class="editor-body">
+    <!-- ── SIDEBAR ── -->
+    <div class="editor-sidebar">
+      <!-- Novel Info -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Novel Info</div>
+        <div class="sidebar-field"><label>Title</label><input id="ed-title" oninput="updateNovelMeta()"/></div>
+        <div class="sidebar-field"><label>Author</label><input id="ed-author" oninput="updateNovelMeta()"/></div>
+        <div class="sidebar-field"><label>Genre</label>
+          <select id="ed-genre" onchange="updateNovelMeta()">
+            <option>Fantasy</option><option>Sci-Fi</option><option>Mystery</option><option>Thriller</option>
+            <option>Romance</option><option>Horror</option><option>Historical Fiction</option>
+            <option>Literary Fiction</option><option>Adventure</option><option>Young Adult</option><option>Other</option>
+          </select>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item"><span class="stat-num" id="stat-words">0</span><span class="stat-label">Words</span></div>
+          <div class="stat-item"><span class="stat-num" id="stat-chs">0</span><span class="stat-label">Chs</span></div>
+          <div class="stat-item"><span class="stat-num" id="stat-chars">0</span><span class="stat-label">Chars</span></div>
+        </div>
+      </div>
+
+      <!-- Chapters -->
+      <div class="chapter-list-wrap">
+        <div class="chapter-list-header">
+          <span>Chapters</span>
+          <button class="add-ch-btn" onclick="addChapter()" title="Add chapter">+</button>
+        </div>
+        <div id="chapter-list"></div>
+      </div>
+
+    </div>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="editor-content">
+
+      <!-- ✍️ WRITE -->
+      <div class="tab-pane active" id="tab-write">
+        <div class="ch-title-bar">
+          <label>Chapter:</label>
+          <input class="ch-title-input" id="ch-title-input" placeholder="Chapter Title" oninput="onChapterTitleChange()"/>
+          <span class="ch-wordcount" id="ch-wordcount">0 words</span>
+        </div>
+        <!-- Format Toolbar -->
+        <div class="fmt-toolbar">
+          <button class="fmt-btn" id="fmt-bold" onclick="fmtExec('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button class="fmt-btn" id="fmt-italic" onclick="fmtExec('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+          <div class="fmt-sep"></div>
+          <button class="fmt-btn" onclick="insertSmartQuote()" title="Insert dialogue with smart quotes" style="width:auto;padding:0 8px;font-size:12px;color:var(--teal);border-color:var(--teal)">❝ Dialogue</button>
+          <button class="fmt-btn" onclick="fmtExec('removeFormat')" title="Clear formatting" style="width:auto;padding:0 8px;font-size:11px">✕ Clear</button>
+          <div class="fmt-sep"></div>
+          <span style="font-size:10px;color:var(--text-faint);letter-spacing:.5px">Ctrl+B Bold · Ctrl+I Italic · " auto-curls</span>
+        </div>
+        <div class="main-editor" id="main-editor" contenteditable="true"
+          data-placeholder="Begin your story here…&#10;&#10;Select or add a chapter from the sidebar.&#10;Tip: Ctrl+B for bold, Ctrl+I for italic. Quotes curl automatically."
+          oninput="onEditorInput()" onkeydown="handleEditorKey(event)" onkeypress="handleEditorKeypress(event)" onmouseup="updateFmtState()" onkeyup="updateFmtState()"></div>
+        <div class="img-strip" id="ch-img-strip">
+          <span class="img-strip-label">Chapter Images:</span>
+          <span class="img-strip-empty" id="ch-img-empty">No images yet</span>
+        </div>
+        <div class="ai-toolbar">
+          <button class="ai-btn" onclick="aiContinue()">🤖 Continue Story</button>
+          <button class="ai-btn" onclick="aiImprove()">✨ Improve Writing</button>
+          <button class="ai-btn" onclick="aiRewrite()">🔁 Rewrite Selection</button>
+          <button class="ai-btn" onclick="aiSummarize()">📋 Summarize</button>
+          <button class="ai-btn" onclick="triggerChapterImageUpload()" style="border-color:var(--teal);color:var(--teal)">📷 Insert Image</button>
+          <input type="file" id="chapter-img-input" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none" onchange="onChapterImageSelected(event)"/>
+          <div class="model-pill" style="margin-left:auto;flex-shrink:0">
+            <label>Model:</label>
+            <select id="write-model" onchange="syncModel(this.value)">
+              <option value="openai">GPT-4o</option>
+              <option value="openai-large">GPT-4o Large</option>
+              <option value="perplexity-fast">Perplexity Fast</option>
+              <option value="perplexity-reasoning">Perplexity Reasoning</option>
+            </select>
+          </div>
+          <span class="ai-busy-label" id="editor-ai-status" style="display:none"></span>
+        </div>
+      </div>
+
+      <!-- 🧠 AI STUDIO -->
+      <div class="tab-pane" id="tab-ai" style="flex-direction:column">
+        <div class="content-section-bar">
+          <div class="content-section-title">🧠 AI Studio</div>
+          <div class="content-section-actions">
+            <span style="font-size:12px;color:var(--text-faint)">Pollinations AI — Free &amp; Open</span>
+          </div>
+        </div>
+        <div class="ai-studio" style="flex:1;overflow:hidden">
+          <div class="ai-tools-panel">
+            <div class="ai-tools-header"><h3>Writing Tools</h3><p>Choose a tool or write a custom prompt</p></div>
+            <div class="ai-tools-list" id="ai-tools-list"></div>
+            <div class="ai-custom-wrap">
+              <label>Custom Prompt</label>
+              <textarea id="custom-prompt" placeholder="Write something creative about..."></textarea>
+              <div class="model-row"><label>Model:</label>
+                <select id="ai-model" onchange="syncModel(this.value)">
+                  <option value="openai">GPT-4o</option>
+                  <option value="openai-large">GPT-4o Large</option>
+                  <option value="perplexity-fast">Perplexity Fast</option>
+                  <option value="perplexity-reasoning">Perplexity Reasoning</option>
+                </select>
+              </div>
+              <button class="btn-sm accent" style="width:100%;padding:9px;margin-top:4px" onclick="aiCustom()">🚀 Generate</button>
+            </div>
+          </div>
+          <div class="ai-output-panel">
+            <div class="ai-output-header">
+              <h3>📄 AI Output</h3>
+              <div class="ai-output-actions">
+                <button class="btn-sm" onclick="copyAiOutput()">📋 Copy</button>
+                <button class="btn-sm" onclick="appendToChapter()">➕ Add to Chapter</button>
+                <button class="btn-sm danger" onclick="clearAiOutput()">Clear</button>
+              </div>
+            </div>
+            <div class="ai-output-area" id="ai-output-area">Ready to generate. Choose a tool or write a custom prompt ✨</div>
+            <div class="ai-status" id="ai-studio-status">Ready ✨</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🎨 COVER ART -->
+      <div class="tab-pane" id="tab-cover" style="flex-direction:column">
+        <div class="content-section-bar">
+          <div class="content-section-title">🎨 Cover Art</div>
+          <div class="content-section-actions">
+            <button class="btn-sm danger" onclick="removeCoverImage()">🗑 Remove</button>
+          </div>
+        </div>
+        <div class="cover-layout">
+          <div class="cover-controls">
+            <h3>Book Cover</h3>
+            <div class="cover-tabs">
+              <div class="cover-tab active" id="ctab-upload" onclick="switchCoverTab('upload')">📁 Upload</div>
+              <div class="cover-tab" id="ctab-ai" onclick="switchCoverTab('ai')">✨ AI Generate</div>
+            </div>
+
+            <!-- UPLOAD PANEL -->
+            <div id="cpanel-upload">
+              <input type="file" id="cover-file-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onCoverImageUpload(event)"/>
+              <button class="upload-zone" type="button" onclick="document.getElementById('cover-file-input').click()">
+                <span class="uz-icon">🖼️</span>
+                <span class="uz-text">Click to upload cover image</span>
+                <span class="uz-sub">JPG, PNG, WebP — auto-resized to 600×900</span>
+              </button>
+              <p style="font-size:11px;color:var(--text-faint);line-height:1.6;margin-top:6px">Uploaded cover is stored in your GitHub repo and used in EPUB/PDF exports.</p>
+            </div>
+
+            <!-- AI PANEL -->
+            <div id="cpanel-ai" style="display:none">
+              <div class="field-group"><label>Art Style</label>
+                <select id="cover-style">
+                  <option>Epic Fantasy</option><option>Dark Mystery</option><option>Sci-Fi Space</option>
+                  <option>Gothic Horror</option><option>Romantic</option><option>Historical Epic</option>
+                  <option>Cyberpunk</option><option>Literary</option><option>Thriller</option>
+                </select>
+              </div>
+              <div class="field-group"><label>Scene Description</label>
+                <textarea id="cover-desc" placeholder="A lone figure standing at the edge of a glowing forest..." style="height:90px"></textarea>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px">
+                <button class="btn-sm accent" style="padding:11px" onclick="generateCover()">🎨 Generate AI Cover</button>
+                <button class="btn-sm" style="padding:8px" onclick="saveAiCoverToNovel()">💾 Save to Novel</button>
+                <button class="btn-sm" style="padding:8px" onclick="downloadCover()">⬇️ Download Image</button>
+              </div>
+              <p style="font-size:11px;color:var(--text-faint);margin-top:10px;line-height:1.6">Click "Save to Novel" to store the AI cover for use in exports.</p>
+            </div>
+
+            <p id="cover-status" style="font-size:12px;color:var(--text-dim);margin-top:10px;font-style:italic;line-height:1.5"></p>
+          </div>
+          <div class="cover-preview" id="cover-preview">
+            <div class="cover-placeholder"><span>🎨</span><p>Your cover will appear here</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 👥 CHARACTERS -->
+      <div class="tab-pane" id="tab-characters" style="flex-direction:column">
+        <div class="content-section-bar">
+          <div class="content-section-title">👥 Characters</div>
+          <div class="content-section-actions">
+            <div class="model-pill">
+              <label>Model:</label>
+              <select id="char-model" onchange="syncModel(this.value)">
+                <option value="openai">GPT-4o</option>
+                <option value="openai-large">GPT-4o Large</option>
+                <option value="perplexity-fast">Perplexity Fast</option>
+                <option value="perplexity-reasoning">Perplexity Reasoning</option>
+              </select>
+            </div>
+            <button class="btn-sm" onclick="aiCreateChar()">🤖 AI Generate</button>
+            <button class="btn-sm accent" onclick="addCharacter()">+ Add</button>
+          </div>
+        </div>
+        <div class="chars-layout">
+          <div class="chars-list-col">
+            <div class="chars-list-header"><h3>Cast</h3></div>
+            <div class="chars-list" id="chars-list"></div>
+          </div>
+          <div class="chars-detail">
+            <h3>Character Details</h3>
+            <div class="field-group"><label>Name</label><input id="char-name" placeholder="Character name"/></div>
+            <div class="field-group"><label>Role</label>
+              <select id="char-role"><option>Protagonist</option><option>Antagonist</option><option>Supporting</option><option>Minor</option></select>
+            </div>
+            <div class="field-group"><label>Description, Background &amp; Personality</label>
+              <textarea id="char-desc" placeholder="Describe this character..."></textarea>
+            </div>
+            <div class="char-actions">
+              <button class="btn-sm accent" onclick="saveCharacter()">💾 Save</button>
+              <button class="btn-sm danger" onclick="deleteCharacter()">🗑 Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📋 NOTES -->
+      <div class="tab-pane" id="tab-notes" style="flex-direction:column">
+        <div class="content-section-bar">
+          <div class="content-section-title">📋 Notes &amp; Synopsis</div>
+          <div class="content-section-actions">
+            <div class="model-pill">
+              <label>Model:</label>
+              <select id="notes-model" onchange="syncModel(this.value)">
+                <option value="openai">GPT-4o</option>
+                <option value="openai-large">GPT-4o Large</option>
+                <option value="perplexity-fast">Perplexity Fast</option>
+                <option value="perplexity-reasoning">Perplexity Reasoning</option>
+              </select>
+            </div>
+            <button class="btn-sm" onclick="aiSynopsis()">🤖 AI Synopsis</button>
+          </div>
+        </div>
+        <div class="notes-layout">
+          <div class="notes-section" style="flex:0.38">
+            <div class="notes-section-header"><h3>📋 Synopsis</h3></div>
+            <textarea class="notes-textarea" id="synopsis-text" placeholder="Your novel synopsis / back-cover blurb..." oninput="scheduleSave()"></textarea>
+          </div>
+          <div class="notes-section" style="flex:0.62">
+            <div class="notes-section-header"><h3>🌍 World Building &amp; Notes</h3></div>
+            <textarea class="notes-textarea" id="world-notes" placeholder="World details, magic systems, lore, places, research..." oninput="scheduleSave()"></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end editor-content -->
+  </div><!-- end editor-body -->
+</div><!-- end screen-editor -->
+
+<script>
+const S={token:null,user:null,repoOwner:null,novels:[],novel:null,novelSha:null,chIdx:null,aiBusy:false,saveTimer:null,coverUrl:null,charIdx:null,currentSection:'write',pollinationsToken:null,aiModel:'openai'};
+const REPO='novelcraft-novels',API='https://api.github.com',GEN_API='https://gen.pollinations.ai',IMG_API='https://image.pollinations.ai/prompt/';
+
+// ═══════════════════════════════════════════════════
+// GITHUB API
+// ═══════════════════════════════════════════════════
+async function gh(method,path,body){
+  const opts={method,headers:{'Authorization':'token '+S.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(API+path,opts);
+  return{ok:res.ok,status:res.status,data:res.status!==204?await res.json():null};
+}
+async function ensureRepo(){
+  const r=await gh('GET',`/repos/${S.repoOwner}/${REPO}`);
+  if(r.ok)return true;
+  if(r.status===404){const c=await gh('POST','/user/repos',{name:REPO,description:'My NovelCraft AI library',private:true,auto_init:true});if(c.ok){await new Promise(r=>setTimeout(r,1500));return true;}}
+  return false;
+}
+async function ghGetFile(path){
+  const r=await gh('GET',`/repos/${S.repoOwner}/${REPO}/contents/${path}`);
+  if(!r.ok)return null;
+  const content=decodeURIComponent(escape(atob(r.data.content.replace(/\n/g,''))));
+  return{content:JSON.parse(content),sha:r.data.sha};
+}
+async function ghPutFile(path,content,sha,msg){
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(content,null,2))));
+  const body={message:msg||'NovelCraft save',content:encoded};
+  if(sha)body.sha=sha;
+  return await gh('PUT',`/repos/${S.repoOwner}/${REPO}/contents/${path}`,body);
+}
+async function ghDeleteFile(path,sha){return await gh('DELETE',`/repos/${S.repoOwner}/${REPO}/contents/${path}`,{message:'Delete novel',sha});}
+async function ghListDir(path){const r=await gh('GET',`/repos/${S.repoOwner}/${REPO}/contents/${path}`);return(!r.ok||!Array.isArray(r.data))?[]:r.data;}
+
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// GITHUB DEVICE FLOW AUTH
+// ═══════════════════════════════════════════════════
+let _devicePollTimer=null;
+
+async function startGithubDeviceFlow(){
+  const clientId=localStorage.getItem('nc_gh_client_id')||document.getElementById('gh-client-id')?.value.trim()||'';
+  if(!clientId){
+    // Show client ID input field
+    document.getElementById('gh-clientid-wrap').style.display='block';
+    document.getElementById('gh-signin-btn').style.display='none';
+    showError('Enter your GitHub OAuth App Client ID to continue (see instructions below)');
+    return;
+  }
+  document.getElementById('login-error').style.display='none';
+  const btn=document.getElementById('gh-signin-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Connecting...';
+  try{
+    // Request device code — use a CORS proxy since GitHub doesn't allow browser CORS on this endpoint
+    const resp=await fetch('https://github.com/login/device/code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({client_id:clientId,scope:'repo'})
+    });
+    if(!resp.ok) throw new Error('Failed to start device flow');
+    const d=await resp.json();
+    if(d.error) throw new Error(d.error_description||d.error);
+    localStorage.setItem('nc_gh_client_id',clientId);
+    showDeviceCode(d,clientId);
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> Sign in with GitHub';
+    showError('⚠️ '+e.message+'. Make sure your Client ID is correct and Device Flow is enabled on your GitHub OAuth App.');
+    document.getElementById('gh-clientid-wrap').style.display='block';
+  }
+}
+
+function showDeviceCode(d,clientId){
+  document.getElementById('gh-step-idle').style.display='none';
+  document.getElementById('gh-step-code').style.display='block';
+  document.getElementById('gh-clientid-wrap').style.display='none';
+  document.getElementById('gh-user-code').textContent=d.user_code;
+  document.getElementById('gh-verify-link').href=d.verification_uri||'https://github.com/login/device';
+  window.open(d.verification_uri||'https://github.com/login/device','_blank');
+  const interval=(d.interval||5)*1000;
+  _devicePollTimer=setInterval(()=>pollDeviceToken(d.device_code,clientId),interval);
+}
+
+async function pollDeviceToken(deviceCode,clientId){
+  try{
+    const resp=await fetch('https://github.com/login/oauth/access_token',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({client_id:clientId,device_code:deviceCode,grant_type:'urn:ietf:params:oauth:grant-type:device_code'})
+    });
+    const d=await resp.json();
+    if(d.access_token){
+      clearInterval(_devicePollTimer);
+      document.getElementById('gh-poll-status').textContent='✅ Authorized! Signing in...';
+      await completeLogin(d.access_token);
+    }else if(d.error==='authorization_pending'){
+      // still waiting, normal
+    }else if(d.error==='slow_down'){
+      clearInterval(_devicePollTimer);_devicePollTimer=setInterval(()=>pollDeviceToken(deviceCode,clientId),6000);
+    }else if(d.error==='expired_token'){
+      clearInterval(_devicePollTimer);cancelDeviceFlow();showError('Code expired. Please try again.');
+    }else if(d.error){
+      clearInterval(_devicePollTimer);cancelDeviceFlow();showError('Auth error: '+d.error_description);
+    }
+  }catch(e){ /* network error, keep polling */ }
+}
+
+async function completeLogin(token){
+  let pollToken=document.getElementById('pollinations-token').value.trim();
+  if(!pollToken) pollToken=localStorage.getItem('nc_poll_key')||'';
+  if(!pollToken){showError('Please connect with Pollinations (Step 2) or paste your API key');cancelDeviceFlow();return;}
+  document.getElementById('gh-token').value=token;
+  S.token=token;S.pollinationsToken=pollToken;
+  const r=await gh('GET','/user');
+  if(!r.ok){S.token=null;S.pollinationsToken=null;cancelDeviceFlow();showError('❌ Could not fetch GitHub profile. Try again.');return;}
+  S.user=r.data;S.repoOwner=r.data.login;
+  sessionStorage.setItem('nc_token',token);
+  sessionStorage.setItem('nc_poll_token',pollToken);
+  sessionStorage.setItem('nc_user',JSON.stringify(r.data));
+  document.getElementById('user-avatar').src=r.data.avatar_url;
+  document.getElementById('user-name').textContent=r.data.login;
+  showScreen('screen-list');showToast('Welcome, '+r.data.login+' 👋');
+  await ensureRepo();await loadNovels();
+}
+
+function cancelDeviceFlow(){
+  if(_devicePollTimer){clearInterval(_devicePollTimer);_devicePollTimer=null;}
+  document.getElementById('gh-step-idle').style.display='block';
+  document.getElementById('gh-step-code').style.display='none';
+  const btn=document.getElementById('gh-signin-btn');
+  btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> Sign in with GitHub';
+}
+
+function retryDeviceFlow(){
+  const cid=document.getElementById('gh-client-id').value.trim();
+  if(cid) localStorage.setItem('nc_gh_client_id',cid);
+  document.getElementById('gh-clientid-wrap').style.display='none';
+  document.getElementById('gh-signin-btn').style.display='block';
+  startGithubDeviceFlow();
+}
+
+async function doLogin(){
+  // Legacy fallback (kept for session restore)
+  const token=document.getElementById('gh-token').value.trim();
+  let pollToken=document.getElementById('pollinations-token').value.trim();
+  if(!pollToken) pollToken=localStorage.getItem('nc_poll_key')||'';
+  if(!token||!pollToken) return;
+  await completeLogin(token);
+}
+
+function logout(){sessionStorage.clear();S.token=null;S.pollinationsToken=null;S.user=null;S.novels=[];document.getElementById('gh-token').value='';document.getElementById('pollinations-token').value='';cancelDeviceFlow();updateBYOPStatus();showScreen('screen-login');}
+
+// ═══════════════════════════════════════════════════
+// BYOP — Bring Your Own Pollen
+// ═══════════════════════════════════════════════════
+const BYOP_ALL_MODELS='openai,openai-large,perplexity-fast,perplexity-reasoning,gptimage';
+
+function connectWithPollinations(){
+  // Save the GitHub token temporarily so it survives the redirect
+  const ghVal=document.getElementById('gh-token').value.trim();
+  if(ghVal) localStorage.setItem('nc_pending_gh',ghVal);
+  const redirectUrl=window.location.href.split('#')[0];
+  const authUrl=`https://enter.pollinations.ai/authorize?redirect_url=${encodeURIComponent(redirectUrl)}&permissions=profile,balance&models=${encodeURIComponent(BYOP_ALL_MODELS)}&expiry=30&budget=10`;
+  window.location.href=authUrl;
+}
+
+function checkForBYOPKey(){
+  const hash=window.location.hash.slice(1);
+  if(hash){
+    const params=new URLSearchParams(hash);
+    const apiKey=params.get('api_key');
+    if(apiKey){
+      localStorage.setItem('nc_poll_key',apiKey);
+      // Clear hash from URL
+      history.replaceState(null,null,window.location.pathname+window.location.search);
+      // Restore GitHub token if it was saved before redirect
+      const pendingGh=localStorage.getItem('nc_pending_gh');
+      if(pendingGh){document.getElementById('gh-token').value=pendingGh;localStorage.removeItem('nc_pending_gh');}
+      updateBYOPStatus();
+      showBYOPToast('✅ Pollinations connected! Now click Connect →');
+      return;
+    }
+  }
+  updateBYOPStatus();
+}
+
+function updateBYOPStatus(){
+  const key=localStorage.getItem('nc_poll_key');
+  const bar=document.getElementById('byopStatusBar');
+  const txt=document.getElementById('byopStatusText');
+  const btn=document.getElementById('byopConnectBtn');
+  if(!bar)return;
+  if(key){
+    bar.classList.remove('hidden');
+    const masked=key.substring(0,6)+'···'+key.slice(-4);
+    txt.innerHTML=`✅ Connected &nbsp;<code style="background:rgba(76,184,160,.15);padding:2px 7px;border-radius:3px;font-size:10px">${masked}</code>`;
+    btn.textContent='🔗 Reconnect';
+  }else{
+    bar.classList.add('hidden');
+    btn.textContent='🔗 Connect with Pollinations';
+  }
+}
+
+function disconnectBYOP(){
+  if(!confirm('Disconnect Pollinations? You\'ll need to reconnect for AI features.'))return;
+  localStorage.removeItem('nc_poll_key');
+  document.getElementById('pollinations-token').value='';
+  updateBYOPStatus();
+}
+
+function showBYOPToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;top:22px;right:22px;z-index:9999;padding:12px 20px;background:var(--surface);border:1px solid var(--teal);border-left:3px solid var(--teal);color:var(--teal);font-size:14px;animation:fadeUp .3s ease;font-family:Crimson Pro,serif';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),4000);
+}
+function showError(msg){const el=document.getElementById('login-error');el.textContent=msg;el.style.display='block';}
+
+// ═══════════════════════════════════════════════════
+// LIBRARY
+// ═══════════════════════════════════════════════════
+async function loadNovels(){
+  const grid=document.getElementById('novels-grid');
+  grid.innerHTML='<div class="empty-state"><span><div class="spinner" style="width:40px;height:40px;border-width:3px;margin:auto"></div></span><p style="margin-top:14px">Loading library...</p></div>';
+  const dirs=await ghListDir('novels');
+  const folders=dirs.filter(d=>d.type==='dir');
+  const results=await Promise.all(folders.map(async f=>{
+    const file=await ghGetFile(`novels/${f.name}/data.json`);
+    if(!file)return null;
+    const n=file.content;
+    const wc=(n.chapters||[]).reduce((a,c)=>a+stripHtml(c.content||'').trim().split(/\s+/).filter(Boolean).length,0);
+    return{id:f.name,title:n.title||'Untitled',author:n.author||'',genre:n.genre||'Fiction',modified:n.modified||n.created||'',wordCount:wc,chapterCount:(n.chapters||[]).length};
+  }));
+  S.novels=results.filter(Boolean).sort((a,b)=>b.modified.localeCompare(a.modified));
+  renderGrid();
+}
+function renderGrid(){
+  const grid=document.getElementById('novels-grid');
+  const sub=document.getElementById('library-subtitle');
+  if(!S.novels.length){grid.innerHTML='<div class="empty-state"><span class="emoji">📚</span><h3>No novels yet</h3><p>Click "+ New Novel" to begin your story</p></div>';sub.textContent='No novels';return;}
+  sub.textContent=`${S.novels.length} novel${S.novels.length>1?'s':''} · saved in your private GitHub repo`;
+  grid.innerHTML=S.novels.map(n=>`
+    <div class="novel-card" onclick="openNovel('${n.id}')">
+      <div class="card-actions"><button class="card-btn del" onclick="event.stopPropagation();deleteNovel('${n.id}')" title="Delete">🗑</button></div>
+      <div class="novel-card-genre">${escHtml(n.genre)}</div>
+      <div class="novel-card-title" style="margin-top:9px">${escHtml(n.title)}</div>
+      <div class="novel-card-author">${n.author?'by '+escHtml(n.author):'Author not set'}</div>
+      <div class="novel-card-meta"><span>📖 ${n.chapterCount} ch</span><span>📝 ${n.wordCount.toLocaleString()} words</span></div>
+      <div style="font-size:11px;color:var(--text-faint)">${n.modified?'Modified '+fmtDate(n.modified):''}</div>
+    </div>`).join('');
+}
+function openModal(){document.getElementById('new-title').value='';document.getElementById('new-author').value=S.user?.name||'';document.getElementById('modal-new').classList.add('open');setTimeout(()=>document.getElementById('new-title').focus(),100);}
+function closeModal(){document.getElementById('modal-new').classList.remove('open');}
+async function createNovel(){
+  const title=document.getElementById('new-title').value.trim()||'Untitled Novel';
+  const author=document.getElementById('new-author').value.trim();
+  const genre=document.getElementById('new-genre').value;
+  const id='novel_'+Date.now();
+  const novel={id,title,author,genre,synopsis:'',worldNotes:'',chapters:[{title:'Chapter 1',content:''}],characters:[],created:new Date().toISOString(),modified:new Date().toISOString()};
+  closeModal();showToast('Creating novel...');
+  const r=await ghPutFile(`novels/${id}/data.json`,novel,null,`Create: ${title}`);
+  if(r.ok){showToast('Novel created! ✨','success');await loadNovel(id,novel);}
+  else showToast('Failed to create novel','error');
+}
+async function deleteNovel(id){
+  if(!confirm('Delete this novel permanently?'))return;
+  const file=await ghGetFile(`novels/${id}/data.json`);
+  if(file){await ghDeleteFile(`novels/${id}/data.json`,file.sha);showToast('Novel deleted','success');await loadNovels();}
+}
+async function openNovel(id){
+  showToast('Loading...');
+  const file=await ghGetFile(`novels/${id}/data.json`);
+  if(!file){showToast('Failed to load','error');return;}
+  await loadNovel(id,file.content,file.sha);
+}
+async function loadNovel(id,novel,sha){
+  S.novel={...novel,id};S.novelSha=sha||null;S.chIdx=novel.chapters?.length?0:null;S.charIdx=null;
+  document.getElementById('ed-novel-title').textContent=novel.title;
+  document.getElementById('ed-novel-meta').textContent=`${novel.genre} · ${novel.author||'Unknown author'}`;
+  document.getElementById('ed-title').value=novel.title;
+  document.getElementById('ed-author').value=novel.author||'';
+  document.getElementById('ed-genre').value=novel.genre||'Fantasy';
+  document.getElementById('synopsis-text').value=novel.synopsis||'';
+  document.getElementById('world-notes').value=novel.worldNotes||'';
+  if(novel.coverImageData)showCoverPreview(novel.coverImageData);
+  else document.getElementById('cover-preview').innerHTML='<div class="cover-placeholder"><span>🎨</span><p>Your cover will appear here</p></div>';
+  renderChapterList();renderCharList();updateStats();
+  if(S.chIdx!==null)loadChapter(S.chIdx);
+  showScreen('screen-editor');
+  switchSection('write');
+  setSaveStatus('saved','All saved ✓');
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function switchSection(section){
+  S.currentSection = section;
+  // Update sidebar nav active states
+  document.querySelectorAll('.topbar-nav-item').forEach(el=>el.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+section);
+  if(navEl) navEl.classList.add('active');
+  // Show correct pane
+  const panes=['write','ai','cover','characters','notes'];
+  panes.forEach(p=>{
+    document.getElementById('tab-'+p).classList.toggle('active', p===section);
+  });
+}
+
+function selectChapterAndWrite(idx){
+  saveCurrentChapter();
+  S.chIdx=idx;
+  loadChapter(idx);
+  renderChapterList();
+  switchSection('write');
+}
+
+// ═══════════════════════════════════════════════════
+// CHAPTERS
+// ═══════════════════════════════════════════════════
+function renderChapterList(){
+  const list=document.getElementById('chapter-list');
+  if(!S.novel?.chapters?.length){list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text-faint);text-align:center">No chapters yet</div>';return;}
+  list.innerHTML=S.novel.chapters.map((ch,i)=>`
+    <div class="chapter-item ${i===S.chIdx&&S.currentSection==='write'?'active':''}"
+         draggable="true" data-idx="${i}"
+         onclick="selectChapterAndWrite(${i})"
+         ondragstart="onChDragStart(event,${i})"
+         ondragover="onChDragOver(event)"
+         ondragleave="onChDragLeave(event)"
+         ondrop="onChDrop(event,${i})"
+         ondragend="onChDragEnd(event)">
+      <span class="ch-drag-handle">⠿</span>
+      <span class="ch-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="ch-title">${escHtml(ch.title||'Untitled')}</span>
+      <span class="ch-del" onclick="event.stopPropagation();deleteChapter(${i})">✕</span>
+    </div>`).join('');
+}
+function loadChapter(idx){
+  if(!S.novel?.chapters)return;
+  const ch=S.novel.chapters[idx];
+  const ed=document.getElementById('main-editor');
+  document.getElementById('ch-title-input').value=ch.title||'';
+  ed.innerHTML=ch.content||'';
+  updateChWc();renderImgStrip();
+}
+function selectChapter(idx){saveCurrentChapter();S.chIdx=idx;loadChapter(idx);renderChapterList();}
+function saveCurrentChapter(){
+  if(S.chIdx===null||!S.novel?.chapters)return;
+  S.novel.chapters[S.chIdx].content=document.getElementById('main-editor').innerHTML;
+  S.novel.chapters[S.chIdx].title=document.getElementById('ch-title-input').value;
+}
+function onChapterTitleChange(){if(S.chIdx===null||!S.novel?.chapters)return;S.novel.chapters[S.chIdx].title=document.getElementById('ch-title-input').value;renderChapterList();scheduleSave();}
+function onEditorInput(){updateChWc();updateFmtState();scheduleSave();}
+function updateChWc(){
+  const t=(document.getElementById('main-editor').innerText||'').trim();
+  const wc=t?t.split(/\s+/).filter(Boolean).length:0;
+  document.getElementById('ch-wordcount').textContent=wc.toLocaleString()+' words';
+}
+// ── FORMAT TOOLBAR ──
+function fmtExec(cmd){document.execCommand(cmd,false,null);document.getElementById('main-editor').focus();updateFmtState();}
+function updateFmtState(){
+  try{
+    document.getElementById('fmt-bold').classList.toggle('active',document.queryCommandState('bold'));
+    document.getElementById('fmt-italic').classList.toggle('active',document.queryCommandState('italic'));
+  }catch(e){}
+}
+function insertSmartQuote(){
+  const ed=document.getElementById('main-editor');ed.focus();
+  document.execCommand('insertText',false,'\u201C\u201D');
+  const sel=window.getSelection();
+  if(sel.rangeCount){
+    const r=sel.getRangeAt(0);
+    try{r.setStart(r.startContainer,r.startOffset-1);r.collapse(true);sel.removeAllRanges();sel.addRange(r);}catch(e){}
+  }
+}
+function handleEditorKey(e){
+  if(e.ctrlKey&&e.key==='s'){e.preventDefault();saveNowManual();return;}
+  if(e.ctrlKey&&e.key==='b'){e.preventDefault();fmtExec('bold');return;}
+  if(e.ctrlKey&&e.key==='i'){e.preventDefault();fmtExec('italic');return;}
+}
+function handleEditorKeypress(e){
+  if(e.key==='"'||e.charCode===34){
+    e.preventDefault();
+    const sel=window.getSelection();
+    if(!sel.rangeCount)return;
+    const range=sel.getRangeAt(0);
+    let prevChar='';
+    try{const tmp=range.cloneRange();tmp.collapse(true);tmp.setStart(range.startContainer,Math.max(0,range.startOffset-1));prevChar=tmp.toString();}catch(err){}
+    const useOpen=/[\s\u2014\u2013\u2018\u201C(\['"'"]|^$/.test(prevChar)||range.startOffset===0;
+    document.execCommand('insertText',false,useOpen?'\u201C':'\u201D');
+  }
+}
+function stripHtml(html){const d=document.createElement('div');d.innerHTML=html||'';return d.innerText||'';}
+function updateStats(){if(!S.novel)return;const wc=(S.novel.chapters||[]).reduce((a,c)=>a+stripHtml(c.content||'').trim().split(/\s+/).filter(Boolean).length,0);document.getElementById('stat-words').textContent=wc>999?(wc/1000).toFixed(1)+'k':wc;document.getElementById('stat-chs').textContent=(S.novel.chapters||[]).length;document.getElementById('stat-chars').textContent=(S.novel.characters||[]).length;}
+function addChapter(){saveCurrentChapter();if(!S.novel.chapters)S.novel.chapters=[];S.novel.chapters.push({title:'Chapter '+(S.novel.chapters.length+1),content:''});S.chIdx=S.novel.chapters.length-1;renderChapterList();loadChapter(S.chIdx);updateStats();scheduleSave();switchSection('write');}
+function deleteChapter(idx){if(!confirm('Delete this chapter?'))return;S.novel.chapters.splice(idx,1);if(S.chIdx>=S.novel.chapters.length)S.chIdx=Math.max(0,S.novel.chapters.length-1);if(!S.novel.chapters.length){S.chIdx=null;document.getElementById('main-editor').innerHTML='';document.getElementById('ch-title-input').value='';}else loadChapter(S.chIdx);renderChapterList();updateStats();scheduleSave();}
+
+// ── CHAPTER DRAG-AND-DROP ──
+let _dragIdx=null;
+function onChDragStart(e,idx){
+  saveCurrentChapter();_dragIdx=idx;
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>e.target.classList.add('dragging'),0);
+}
+function onChDragOver(e){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  const el=e.currentTarget;
+  el.classList.remove('drag-over-top','drag-over-bottom');
+  const rect=el.getBoundingClientRect();
+  el.classList.add(e.clientY<rect.top+rect.height/2?'drag-over-top':'drag-over-bottom');
+}
+function onChDragLeave(e){e.currentTarget.classList.remove('drag-over-top','drag-over-bottom');}
+function onChDrop(e,targetIdx){
+  e.preventDefault();
+  const el=e.currentTarget;el.classList.remove('drag-over-top','drag-over-bottom');
+  if(_dragIdx===null||_dragIdx===targetIdx)return;
+  const insertBefore=e.clientY<el.getBoundingClientRect().top+el.getBoundingClientRect().height/2;
+  const chs=S.novel.chapters;
+  const [moved]=chs.splice(_dragIdx,1);
+  let at=targetIdx>_dragIdx?targetIdx-1:targetIdx;
+  if(!insertBefore)at+=1;
+  chs.splice(at,0,moved);
+  if(S.chIdx===_dragIdx)S.chIdx=at;
+  else if(_dragIdx<S.chIdx&&at>=S.chIdx)S.chIdx--;
+  else if(_dragIdx>S.chIdx&&at<=S.chIdx)S.chIdx++;
+  _dragIdx=null;renderChapterList();updateStats();scheduleSave();showToast('Chapter moved ✓','success');
+}
+function onChDragEnd(e){
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.chapter-item').forEach(el=>el.classList.remove('drag-over-top','drag-over-bottom'));
+  _dragIdx=null;
+}
+function updateNovelMeta(){if(!S.novel)return;S.novel.title=document.getElementById('ed-title').value;S.novel.author=document.getElementById('ed-author').value;S.novel.genre=document.getElementById('ed-genre').value;document.getElementById('ed-novel-title').textContent=S.novel.title;document.getElementById('ed-novel-meta').textContent=`${S.novel.genre} · ${S.novel.author||'Unknown author'}`;scheduleSave();}
+
+// ═══════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════
+function scheduleSave(){setSaveStatus('saving','● Saving...');clearTimeout(S.saveTimer);S.saveTimer=setTimeout(saveToGitHub,2500);}
+async function saveNowManual(){clearTimeout(S.saveTimer);await saveToGitHub();showToast('Saved to GitHub ✓','success');}
+async function saveToGitHub(){
+  if(!S.novel||!S.repoOwner)return;
+  saveCurrentChapter();
+  S.novel.synopsis=document.getElementById('synopsis-text').value;
+  S.novel.worldNotes=document.getElementById('world-notes').value;
+  S.novel.modified=new Date().toISOString();
+  setSaveStatus('saving','☁ Syncing...');updateStats();
+  try{
+    const r=await ghPutFile(`novels/${S.novel.id}/data.json`,S.novel,S.novelSha,`Update: ${S.novel.title}`);
+    if(r.ok){S.novelSha=r.data.content.sha;setSaveStatus('saved','Saved to GitHub ✓');}
+    else setSaveStatus('error','⚠ Save failed');
+  }catch(e){setSaveStatus('error','⚠ No connection');}
+}
+function setSaveStatus(type,msg){const el=document.getElementById('save-status');el.className='save-status '+type;el.textContent=msg;}
+function backToList(){clearTimeout(S.saveTimer);saveToGitHub().then(()=>{showScreen('screen-list');loadNovels();});}
+
+// ═══════════════════════════════════════════════════
+// EXPORT — Fixed closeExportModal + error handling
+// ═══════════════════════════════════════════════════
+let _exportFormat = 'txt';
+
+function openExportModal(){
+  if(!S.novel)return;
+  selectFormat('txt');
+  const noteEl=document.getElementById('cover-img-note');
+  if(noteEl)noteEl.style.display=S.novel.coverImageData?'block':'none';
+  document.getElementById('modal-export').classList.add('open');
+}
+
+function closeExportModal(){
+  document.getElementById('modal-export').classList.remove('open');
+}
+
+function selectFormat(fmt){
+  _exportFormat=fmt;
+  ['txt','epub','pdf'].forEach(f=>{document.getElementById('pill-'+f).classList.toggle('selected',f===fmt);});
+  const epubPdfOpts=document.getElementById('epub-pdf-options');
+  const note=document.getElementById('export-format-note');
+  if(fmt==='txt'){epubPdfOpts.style.display='none';note.textContent='📄 Plain text — clean, simple, works everywhere.';}
+  else if(fmt==='epub'){epubPdfOpts.style.display='block';note.textContent='📚 EPUB — standard format for Kindle, Kobo, Apple Books, and all e-readers.';}
+  else{epubPdfOpts.style.display='block';note.textContent='🖨️ PDF — fixed layout, perfect for printing or sharing.';}
+}
+
+async function doExport(){
+  if(!S.novel)return;
+  saveCurrentChapter();
+  const btn=document.getElementById('export-go-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Exporting...';
+  const opts={
+    cover:   document.getElementById('exp-cover')?.checked ?? true,
+    toc:     document.getElementById('exp-toc')?.checked ?? true,
+    synopsis:document.getElementById('exp-synopsis')?.checked ?? false,
+    coverArt:false,
+  };
+  try{
+    if(_exportFormat==='txt')       exportTxt();
+    else if(_exportFormat==='epub') await exportEpub(opts);
+    else                            await exportPdf(opts);
+    closeExportModal();
+    showToast('Exported successfully! ✓','success');
+  }catch(e){
+    showToast('Export failed: '+e.message,'error');
+    console.error('Export error:',e);
+  }
+  btn.disabled=false;btn.textContent='Export →';
+}
+
+// ── TXT ──
+function exportTxt(){
+  const n=S.novel;
+  let txt=`${'='.repeat(60)}\n${n.title}\nBy ${n.author||'Unknown'}\n${'='.repeat(60)}\n\n`;
+  if(n.synopsis)txt+=`SYNOPSIS\n${'-'.repeat(40)}\n${n.synopsis}\n\n`;
+  (n.chapters||[]).forEach((ch,i)=>{txt+=`\n${'='.repeat(60)}\nChapter ${i+1}: ${ch.title||''}\n${'='.repeat(60)}\n\n${stripHtml(ch.content||'').replace(/\{\{IMG:[^}]+\}\}/g,'[image]').trim()}\n`;});
+  dlBlob(new Blob([txt],{type:'text/plain'}),safeName(n.title)+'.txt');
+}
+
+// ── EPUB ──
+async function exportEpub(opts){
+  const n=S.novel;
+  if(typeof JSZip==='undefined')throw new Error('JSZip not loaded. Check your internet connection.');
+  const zip=new JSZip();
+  zip.file('mimetype','application/epub+zip',{compression:'STORE'});
+  zip.file('META-INF/container.xml',`<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:schemas:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`);
+  const css=`@charset "UTF-8";body{font-family:Georgia,"Times New Roman",serif;margin:4%;line-height:1.8;color:#1a1a1a;font-size:1em}h1{font-size:2.2em;text-align:center;margin:0.8em 0 0.3em;line-height:1.2}h2{font-size:1.6em;margin:2em 0 0.8em;border-bottom:1px solid #ddd;padding-bottom:0.3em}h3{font-size:1.2em;color:#555;text-align:center;margin-bottom:1.5em}p{text-indent:1.8em;margin:0;padding:0}p+p{margin-top:0.2em}.no-indent{text-indent:0}.cover-page{text-align:center;margin-top:15%;page-break-after:always}.cover-page img{max-width:100%;max-height:85vh;display:block;margin:0 auto 1.5em}.genre-tag{display:inline-block;border:1px solid #bbb;padding:0.2em 0.8em;font-size:0.85em;color:#777;margin-top:0.5em}.toc-page h2{text-align:center;border:none}.toc-list{list-style:none;padding:0;margin:1.5em 0}.toc-list li{padding:0.5em 0;border-bottom:1px dotted #ddd}.toc-list a{text-decoration:none;color:#333;font-size:1.05em}.chapter-num{font-size:0.85em;color:#999;display:block;text-align:center;margin-bottom:0.2em}.synopsis-page{page-break-after:always}.synopsis-page p{text-indent:0;margin-bottom:1em}.chapter-break{page-break-before:always;margin-top:0}hr.ornament{border:none;text-align:center;margin:1.5em 0;color:#bbb}hr.ornament::after{content:"✦  ✦  ✦"}`;
+  zip.file('OEBPS/styles.css',css);
+  const manifest=[{id:'css',href:'styles.css',type:'text/css'}];
+  const spine=[];
+  let hasCoverImg=false;
+  if(opts.cover){
+    let imgData=null;
+    if(S.novel.coverImageData){imgData=S.novel.coverImageData.replace(/^data:image\/\w+;base64,/,'');}
+    if(imgData){zip.file('OEBPS/cover.jpg',imgData,{base64:true});manifest.push({id:'cover-img',href:'cover.jpg',type:'image/jpeg',props:'cover-image'});hasCoverImg=true;}
+    let body='';
+    if(hasCoverImg)body=`<img src="cover.jpg" alt="Cover"/>`;
+    body+=`<h1>${xEsc(n.title)}</h1>`;
+    if(n.author)body+=`<p class="no-indent" style="font-size:1.1em;color:#555;margin-top:0.5em">by ${xEsc(n.author)}</p>`;
+    if(n.genre)body+=``;
+    zip.file('OEBPS/cover.xhtml',xhtml('Cover',`<div class="cover-page">${body}</div>`));
+    manifest.push({id:'cover',href:'cover.xhtml',type:'application/xhtml+xml'});spine.push('cover');
+  }
+  if(opts.toc&&n.chapters?.length){
+    const items=(n.chapters||[]).map((ch,i)=>`<li><a href="ch_${pad(i+1)}.xhtml">${xEsc(ch.title||`Chapter ${i+1}`)}</a></li>`).join('');
+    zip.file('OEBPS/toc.xhtml',xhtml('Table of Contents',`<div class="toc-page"><h2>Table of Contents</h2><ol class="toc-list">${items}</ol></div>`));
+    manifest.push({id:'toc-page',href:'toc.xhtml',type:'application/xhtml+xml'});spine.push('toc-page');
+  }
+  if(opts.synopsis&&n.synopsis){
+    const paras=n.synopsis.split('\n').filter(l=>l.trim()).map(l=>`<p>${xEsc(l)}</p>`).join('');
+    zip.file('OEBPS/synopsis.xhtml',xhtml('Synopsis',`<div class="synopsis-page"><h2>Synopsis</h2>${paras}</div>`));
+    manifest.push({id:'synopsis',href:'synopsis.xhtml',type:'application/xhtml+xml'});spine.push('synopsis');
+  }
+  (n.chapters||[]).forEach((ch,i)=>{
+    const id=`ch_${pad(i+1)}`;
+    const chImages=ch.images||{};
+    Object.entries(chImages).forEach(([imgId,imgObj])=>{
+      const raw=imgObj.data.replace(/^data:image\/\w+;base64,/,'');
+      zip.file(`OEBPS/${imgId}.jpg`,raw,{base64:true});
+      manifest.push({id:imgId,href:`${imgId}.jpg`,type:'image/jpeg'});
+    });
+    const rawContent=ch.content||'';
+    // rawContent is now HTML from contenteditable — parse it into EPUB-safe XHTML
+    const tmp=document.createElement('div');tmp.innerHTML=rawContent;
+    let bodyParts='';
+    // Walk top-level children (p, img, br, etc)
+    const nodes=tmp.childNodes.length?tmp.childNodes:[tmp];
+    (tmp.childNodes.length?Array.from(tmp.childNodes):[tmp]).forEach(node=>{
+      if(node.nodeType===Node.ELEMENT_NODE&&node.tagName==='IMG'){
+        const imgId=node.getAttribute('data-imgid');
+        if(imgId&&chImages[imgId])bodyParts+=`<figure style="text-align:center;margin:1.5em 0"><img src="${imgId}.jpg" alt="Illustration" style="max-width:100%;height:auto"/></figure>`;
+      }else if(node.nodeType===Node.ELEMENT_NODE&&node.tagName==='P'){
+        const inner=node.innerHTML.replace(/<strong>/g,'<strong>').replace(/<em>/g,'<em>').replace(/<br\s*\/?>/g,' ');
+        if(inner.trim())bodyParts+=`<p>${inner}</p>`;
+      }else if(node.nodeType===Node.TEXT_NODE&&node.textContent.trim()){
+        bodyParts+=`<p>${xEsc(node.textContent)}</p>`;
+      }
+    });
+    if(!bodyParts){
+      // Fallback: plain text extraction
+      const plain=stripHtml(rawContent);
+      plain.split(/\n{2,}/).forEach(para=>{if(para.trim())bodyParts+=`<p>${xEsc(para.trim())}</p>`;});
+    }
+    if(!bodyParts)bodyParts='<p>&#160;</p>';
+    const body=`<div class="chapter-break"><p class="chapter-num">Chapter ${i+1}</p><h2>${xEsc(ch.title||`Chapter ${i+1}`)}</h2>${bodyParts}</div>`;
+    zip.file(`OEBPS/${id}.xhtml`,xhtml(ch.title||`Chapter ${i+1}`,body));
+    manifest.push({id,href:`${id}.xhtml`,type:'application/xhtml+xml'});spine.push(id);
+  });
+  const navItems=(n.chapters||[]).map((ch,i)=>`<li><a href="ch_${pad(i+1)}.xhtml">${xEsc(ch.title||`Chapter ${i+1}`)}</a></li>`).join('');
+  zip.file('OEBPS/nav.xhtml',`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><title>${xEsc(n.title)}</title></head><body><nav epub:type="toc" id="toc"><h1>${xEsc(n.title)}</h1><ol>${navItems}</ol></nav></body></html>`);
+  manifest.push({id:'nav',href:'nav.xhtml',type:'application/xhtml+xml',props:'nav'});
+  const navPoints=(n.chapters||[]).map((ch,i)=>`<navPoint id="np${i+1}" playOrder="${i+1}"><navLabel><text>${xEsc(ch.title||`Chapter ${i+1}`)}</text></navLabel><content src="ch_${pad(i+1)}.xhtml"/></navPoint>`).join('');
+  zip.file('OEBPS/toc.ncx',`<?xml version="1.0" encoding="utf-8"?><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="${n.id}"/><meta name="dtb:depth" content="1"/></head><docTitle><text>${xEsc(n.title)}</text></docTitle><navMap>${navPoints}</navMap></ncx>`);
+  manifest.push({id:'ncx',href:'toc.ncx',type:'application/x-dtbncx+xml'});
+  const mfXml=manifest.map(m=>{let a=`id="${m.id}" href="${m.href}" media-type="${m.type}"`;if(m.props)a+=` properties="${m.props}"`;return`<item ${a}/>`;}).join('\n    ');
+  const spineXml=spine.map(s=>`<itemref idref="${s}"/>`).join('\n    ');
+  const now=new Date().toISOString().replace(/\.\d+Z$/,'Z');
+  zip.file('OEBPS/content.opf',`<?xml version="1.0" encoding="utf-8"?>\n<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid" version="3.0">\n<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n  <dc:title>${xEsc(n.title)}</dc:title>\n  <dc:creator>${xEsc(n.author||'Unknown')}</dc:creator>\n  <dc:subject>${xEsc(n.genre||'Fiction')}</dc:subject>\n  <dc:language>en</dc:language>\n  <dc:identifier id="uid">${n.id||'novel'}</dc:identifier>\n  <meta property="dcterms:modified">${now}</meta>\n  ${hasCoverImg?'<meta name="cover" content="cover-img"/>':''}\n</metadata>\n<manifest>\n    ${mfXml}\n</manifest>\n<spine toc="ncx">\n    ${spineXml}\n</spine>\n</package>`);
+  const blob=await zip.generateAsync({type:'blob',mimeType:'application/epub+zip',compression:'DEFLATE',compressionOptions:{level:6}});
+  dlBlob(blob,safeName(n.title)+'.epub');
+}
+
+// ── PDF ──
+async function exportPdf(opts){
+  if(typeof window.jspdf==='undefined')throw new Error('jsPDF not loaded. Check your internet connection.');
+  const{jsPDF}=window.jspdf;
+  const n=S.novel;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const PW=210,PH=297,ML=22,MR=22,MT=25,MB=22,TW=210-22-22;
+  let y=MT,pageNum=0;
+  function newPage(withNum){doc.addPage();pageNum++;y=MT;if(withNum)addPageNum();}
+  function addPageNum(){doc.setFontSize(9);doc.setFont('times','normal');doc.setTextColor(160,150,130);doc.text(`${n.title}  ·  ${pageNum}`,PW/2,PH-12,{align:'center'});}
+  function checkY(needed){if(y+needed>PH-MB)newPage(true);}
+  function heading(text,size,italic){doc.setFontSize(size||20);doc.setFont('times',italic?'bolditalic':'bold');doc.setTextColor(20,18,14);checkY((size||20)*0.6+6);doc.text(text,ML,y);y+=(size||20)*0.5+6;}
+  function subheading(text){doc.setFontSize(10);doc.setFont('times','normal');doc.setTextColor(140,130,110);doc.text(text.toUpperCase(),ML,y);y+=6;}
+  function para(text){doc.setFontSize(11.5);doc.setFont('times','normal');doc.setTextColor(30,28,24);const lines=doc.splitTextToSize(text,TW);lines.forEach(line=>{checkY(7);doc.text(line,ML,y);y+=7;});y+=3;}
+  function ornament(){checkY(10);doc.setFontSize(14);doc.setTextColor(180,160,120);doc.text('✦   ✦   ✦',PW/2,y,{align:'center'});y+=10;}
+  function divider(){checkY(8);doc.setDrawColor(200,185,150);doc.setLineWidth(0.3);doc.line(ML,y-2,PW-MR,y-2);y+=6;}
+  if(opts.cover){
+    pageNum=0;let coverImgLoaded=false;
+    const coverSrc=S.novel.coverImageData||(opts.coverArt&&S.coverUrl?S.coverUrl:null);
+    if(coverSrc){
+      try{
+        const b64=coverSrc.startsWith('data:')?coverSrc:await fetchAsBase64(coverSrc);
+        const imgH=TW*1.35,imgY=Math.max(MT,(PH-imgH)/2-20);
+        doc.addImage(b64,'JPEG',ML,imgY,TW,imgH);
+        doc.setFillColor(10,8,5);
+        doc.setGState(new doc.GState({opacity:0.65}));
+        doc.rect(0,imgY+imgH-48,PW,52,'F');
+        doc.setGState(new doc.GState({opacity:1}));
+        doc.setFontSize(22);doc.setFont('times','bold');doc.setTextColor(220,195,130);
+        const tLines=doc.splitTextToSize(n.title,TW-10);let ty=imgY+imgH-36;
+        tLines.forEach(l=>{doc.text(l,PW/2,ty,{align:'center'});ty+=11;});
+        if(n.author){doc.setFontSize(12);doc.setFont('times','italic');doc.setTextColor(190,175,150);doc.text('by '+n.author,PW/2,ty+2,{align:'center'});}
+        coverImgLoaded=true;
+      }catch(e){console.warn('Cover image embed failed:',e);}
+    }
+    if(!coverImgLoaded){
+      doc.setFillColor(10,8,5);doc.rect(0,0,PW,PH,'F');
+      doc.setDrawColor(180,150,80);doc.setLineWidth(1.2);doc.line(ML,28,PW-MR,28);
+      doc.setDrawColor(180,150,80);doc.setLineWidth(0.4);doc.line(ML,31,PW-MR,31);
+      doc.setFontSize(28);doc.setFont('times','bold');doc.setTextColor(215,190,125);
+      const tl=doc.splitTextToSize(n.title,TW-10);let ty=PH*0.38;
+      tl.forEach(l=>{doc.text(l,PW/2,ty,{align:'center'});ty+=15;});
+      if(n.author){doc.setFontSize(14);doc.setFont('times','italic');doc.setTextColor(160,148,120);doc.text('by '+n.author,PW/2,ty+8,{align:'center'});ty+=16;}
+      doc.setFontSize(16);doc.setTextColor(120,105,75);doc.text('— ✦ —',PW/2,ty+6,{align:'center'});
+      doc.setFontSize(10);doc.setFont('times','normal');doc.setTextColor(100,90,70);
+      doc.setDrawColor(180,150,80);doc.setLineWidth(0.4);doc.line(ML,PH-26,PW-MR,PH-26);
+      doc.setLineWidth(1.2);doc.line(ML,PH-23,PW-MR,PH-23);
+    }
+    newPage(false);pageNum=1;
+  }
+  if(opts.toc&&(n.chapters||[]).length){
+    doc.setFontSize(22);doc.setFont('times','bold');doc.setTextColor(20,18,14);doc.text('Table of Contents',PW/2,y,{align:'center'});y+=5;divider();y+=4;
+    (n.chapters||[]).forEach((ch,i)=>{checkY(9);doc.setFontSize(11);doc.setFont('times','normal');doc.setTextColor(40,36,28);const chNum=`Chapter ${i+1}  `;const numW=doc.getTextWidth(chNum);doc.setTextColor(140,125,95);doc.text(`Chapter ${i+1}`,ML,y);doc.setTextColor(40,36,28);doc.text(ch.title||'',ML+numW,y);y+=8.5;});
+    addPageNum();newPage(true);pageNum++;
+  }
+  if(opts.synopsis&&n.synopsis){heading('Synopsis',20);divider();n.synopsis.split('\n').filter(l=>l.trim()).forEach(l=>para(l));ornament();addPageNum();newPage(true);pageNum++;}
+  (n.chapters||[]).forEach((ch,i)=>{
+    if(i>0){addPageNum();newPage(false);pageNum++;}
+    subheading(`Chapter ${i+1}`);heading(ch.title||`Chapter ${i+1}`,18);divider();y+=2;
+    const chImages=ch.images||{};
+    // Extract inline images from HTML and convert to plain text paragraphs
+    const tmpDiv=document.createElement('div');tmpDiv.innerHTML=ch.content||'';
+    const contentNodes=Array.from(tmpDiv.childNodes);
+    if(!contentNodes.length||!stripHtml(ch.content||'').trim()){para('[No content yet]');}
+    else{
+      contentNodes.forEach(node=>{
+        if(node.nodeType===Node.ELEMENT_NODE&&node.tagName==='IMG'){
+          const imgId=node.getAttribute('data-imgid');
+          const imgObj=chImages[imgId];
+          if(imgObj?.data){try{const maxImgW=TW,maxImgH=80;checkY(maxImgH+8);doc.setDrawColor(200,185,150);doc.setLineWidth(0.3);doc.rect(ML,y,maxImgW,maxImgH);doc.addImage(imgObj.data,'JPEG',ML,y,maxImgW,maxImgH,undefined,'FAST');y+=maxImgH+8;}catch(e){}}
+        }else{
+          const txt=(node.innerText||node.textContent||'').trim();
+          if(txt)para(txt);
+        }
+      });
+    }
+  });
+  addPageNum();
+  doc.save(safeName(n.title)+'.pdf');
+}
+
+// ── HELPERS ──
+function xhtml(title,bodyContent){return`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8"/><title>${xEsc(title)}</title><link rel="stylesheet" type="text/css" href="styles.css"/></head><body>${bodyContent}</body></html>`;}
+function xEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+function pad(n){return String(n).padStart(3,'0');}
+function safeName(s){return String(s||'novel').replace(/[^a-z0-9\-_ ]/gi,'').replace(/\s+/g,'_').slice(0,40)||'novel';}
+function dlBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
+async function fetchAsBase64(url){const r=await fetch(url);if(!r.ok)throw new Error('fetch failed');const ab=await r.arrayBuffer();const bytes=new Uint8Array(ab);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return'data:image/jpeg;base64,'+btoa(bin);}
+
+// ═══════════════════════════════════════════════════
+// CHARACTERS
+// ═══════════════════════════════════════════════════
+function renderCharList(){
+  const list=document.getElementById('chars-list');
+  if(!S.novel?.characters?.length){list.innerHTML='<div style="padding:14px;font-size:13px;color:var(--text-faint);text-align:center">No characters yet</div>';return;}
+  list.innerHTML=S.novel.characters.map((c,i)=>`<div class="char-item ${i===S.charIdx?'active':''}" onclick="selectChar(${i})"><div class="char-item-name">${escHtml(c.name)}</div><div class="char-item-role">${c.role}</div></div>`).join('');
+}
+function selectChar(idx){S.charIdx=idx;const c=S.novel.characters[idx];document.getElementById('char-name').value=c.name;document.getElementById('char-role').value=c.role;document.getElementById('char-desc').value=c.description||'';renderCharList();}
+function addCharacter(){if(!S.novel.characters)S.novel.characters=[];S.novel.characters.push({name:'New Character',role:'Supporting',description:''});S.charIdx=S.novel.characters.length-1;renderCharList();selectChar(S.charIdx);updateStats();scheduleSave();}
+function saveCharacter(){if(S.charIdx===null)return;S.novel.characters[S.charIdx]={name:document.getElementById('char-name').value,role:document.getElementById('char-role').value,description:document.getElementById('char-desc').value};renderCharList();updateStats();scheduleSave();showToast('Saved ✓','success');}
+function deleteCharacter(){if(S.charIdx===null)return;if(!confirm('Delete?'))return;S.novel.characters.splice(S.charIdx,1);S.charIdx=null;document.getElementById('char-name').value='';document.getElementById('char-desc').value='';renderCharList();updateStats();scheduleSave();}
+async function aiCreateChar(){
+  const ctx=getCtx();
+  const result=await callAI(`Create a complex, memorable character for a ${ctx.genre} novel called "${ctx.title}". Synopsis: ${ctx.synopsis}.\n\nInclude:\n- Name\n- Role (Protagonist/Antagonist/Supporting)\n- Physical appearance\n- Personality (strengths & flaws)\n- Background & backstory\n- Motivations and goals`);
+  if(!result)return;
+  let name='AI Character';
+  for(const line of result.split('\n').slice(0,6)){if(line.toLowerCase().includes('name')){name=line.split(':').pop().trim().replace(/[*_#]/g,'').slice(0,40);break;}}
+  if(!S.novel.characters)S.novel.characters=[];
+  S.novel.characters.push({name,role:'Supporting',description:result});
+  S.charIdx=S.novel.characters.length-1;
+  renderCharList();selectChar(S.charIdx);updateStats();scheduleSave();
+  switchSection('characters');showToast('Character created! ✨','success');
+}
+
+// ═══════════════════════════════════════════════════
+// COVER IMAGE
+// ═══════════════════════════════════════════════════
+function switchCoverTab(tab){
+  document.getElementById('ctab-upload').classList.toggle('active',tab==='upload');
+  document.getElementById('ctab-ai').classList.toggle('active',tab==='ai');
+  document.getElementById('cpanel-upload').style.display=tab==='upload'?'block':'none';
+  document.getElementById('cpanel-ai').style.display=tab==='ai'?'block':'none';
+}
+async function onCoverImageUpload(event){
+  const file=event.target.files?.[0];if(!file)return;
+  document.getElementById('cover-status').textContent='⏳ Processing image...';
+  try{
+    const b64=await compressImage(file,600,900,0.88);
+    S.novel.coverImageData=b64;showCoverPreview(b64);
+    document.getElementById('cover-status').textContent='✅ Cover saved! Will be used in exports.';
+    scheduleSave();showToast('Cover image saved ✓','success');
+  }catch(e){document.getElementById('cover-status').textContent='❌ Failed: '+e.message;}
+  event.target.value='';
+}
+function removeCoverImage(){
+  if(!S.novel.coverImageData)return;if(!confirm('Remove the cover image?'))return;
+  S.novel.coverImageData=null;
+  document.getElementById('cover-preview').innerHTML='<div class="cover-placeholder"><span>🎨</span><p>Your cover will appear here</p></div>';
+  document.getElementById('cover-status').textContent='Cover image removed.';scheduleSave();
+}
+function showCoverPreview(src){
+  const el=document.getElementById('cover-preview');el.innerHTML='';
+  const img=document.createElement('img');img.src=src;img.style.cssText='max-width:100%;max-height:100%;object-fit:contain';el.appendChild(img);
+}
+async function generateCover(){
+  const style=document.getElementById('cover-style').value;
+  const desc=document.getElementById('cover-desc').value.trim();
+  const prompt=`book cover art, "${S.novel?.title||'Novel'}", ${style} style, ${S.novel?.genre||'Fiction'}, ${desc}, dramatic lighting, cinematic, professional publishing`;
+  const p=encodeURIComponent(prompt);
+  // gptimage model — uses Pollinations image API with BYOP key
+  const url=`${IMG_API}${p}?width=480&height=720&model=gptimage&nologo=true&seed=${Date.now()}`;
+  document.getElementById('cover-status').textContent='⏳ Generating AI cover with GPT Image... (20–40 seconds)';
+  document.getElementById('cover-preview').innerHTML='<div class="cover-placeholder"><span><div class="spinner" style="width:50px;height:50px;border-width:3px;margin:auto"></div></span><p style="margin-top:14px">Generating...</p></div>';
+  S.coverUrl=url;
+  const img=new Image();img.crossOrigin='anonymous';
+  img.onload=()=>{document.getElementById('cover-preview').innerHTML='';img.style.cssText='max-width:100%;max-height:100%;object-fit:contain';document.getElementById('cover-preview').appendChild(img);document.getElementById('cover-status').textContent='✅ Done! Click "Save to Novel" to use in exports.';};
+  img.onerror=()=>{document.getElementById('cover-status').textContent='❌ Failed. Try again or check your Pollinations key.';document.getElementById('cover-preview').innerHTML='<div class="cover-placeholder"><span>❌</span><p>Failed</p></div>';};
+  img.src=url;
+}
+async function saveAiCoverToNovel(){
+  if(!S.coverUrl){showToast('Generate a cover first','error');return;}
+  document.getElementById('cover-status').textContent='⏳ Saving to novel...';
+  try{const b64=await fetchAsBase64(S.coverUrl);S.novel.coverImageData=b64;document.getElementById('cover-status').textContent='✅ AI cover saved to novel!';scheduleSave();showToast('Cover saved ✓','success');}
+  catch(e){document.getElementById('cover-status').textContent='❌ Could not fetch image. Download manually instead.';}
+}
+function downloadCover(){if(!S.coverUrl){showToast('Generate a cover first','error');return;}const a=document.createElement('a');a.href=S.coverUrl;a.download=(S.novel?.title||'cover')+'_cover.png';a.target='_blank';a.click();}
+
+// ═══════════════════════════════════════════════════
+// CHAPTER IMAGES
+// ═══════════════════════════════════════════════════
+function triggerChapterImageUpload(){if(S.chIdx===null){showToast('Select a chapter first');return;}document.getElementById('chapter-img-input').click();}
+async function onChapterImageSelected(event){
+  const file=event.target.files?.[0];if(!file||S.chIdx===null)return;showToast('Processing image...');
+  try{
+    const b64=await compressImage(file,900,700,0.85);
+    const id='img_'+Date.now();const ch=S.novel.chapters[S.chIdx];if(!ch.images)ch.images={};
+    ch.images[id]={data:b64,name:file.name};
+    const editor=document.getElementById('main-editor');editor.focus();
+    document.execCommand('insertHTML',false,`<img data-imgid="${id}" src="${b64}" style="max-width:100%;height:auto;display:block;margin:12px 0"/>`);
+    renderImgStrip();updateChWc();scheduleSave();showToast('Image inserted ✓','success');
+  }catch(e){showToast('Image error: '+e.message,'error');}
+  event.target.value='';
+}
+function renderImgStrip(){
+  const strip=document.getElementById('ch-img-strip');const empty=document.getElementById('ch-img-empty');
+  strip.querySelectorAll('.img-thumb').forEach(el=>el.remove());
+  if(S.chIdx===null||!S.novel?.chapters){empty.style.display='';return;}
+  const ch=S.novel.chapters[S.chIdx];const images=ch.images||{};const ids=Object.keys(images);
+  if(!ids.length){empty.style.display='';return;}empty.style.display='none';
+  ids.forEach(id=>{const img=images[id];const div=document.createElement('div');div.className='img-thumb';div.title=img.name||id;div.innerHTML=`<img src="${img.data}" alt="${id}"/><button class="th-del" title="Remove" onclick="removeChapterImage('${id}')">✕</button><div class="th-ins" title="Insert marker" onclick="insertImgMarker('${id}')">Insert</div>`;strip.appendChild(div);});
+}
+function removeChapterImage(id){
+  if(S.chIdx===null)return;
+  const ch=S.novel.chapters[S.chIdx];
+  if(!ch.images?.[id])return;
+  delete ch.images[id];
+  const editor=document.getElementById('main-editor');
+  // Remove the img element with that data-imgid from the contenteditable
+  editor.querySelectorAll(`img[data-imgid="${id}"]`).forEach(el=>el.remove());
+  // Also strip any text-based {{IMG:id}} markers left in the HTML
+  editor.innerHTML=editor.innerHTML.replace(new RegExp(`\\n?\\{\\{IMG:${id}\\}\\}\\n?`,'g'),'');
+  renderImgStrip();scheduleSave();showToast('Image removed','success');
+}
+function insertImgMarker(id){
+  const editor=document.getElementById('main-editor');editor.focus();
+  // Insert the image inline at cursor position
+  const ch=S.novel.chapters[S.chIdx];
+  const imgData=ch?.images?.[id]?.data;
+  if(imgData){
+    document.execCommand('insertHTML',false,`<img data-imgid="${id}" src="${imgData}" style="max-width:100%;height:auto;display:block;margin:12px 0"/>`);
+  }else{
+    document.execCommand('insertText',false,`{{IMG:${id}}}`);
+  }
+  updateChWc();scheduleSave();
+}
+
+// ═══════════════════════════════════════════════════
+// IMAGE COMPRESSION
+// ═══════════════════════════════════════════════════
+function compressImage(file,maxW,maxH,quality){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();reader.onerror=reject;
+    reader.onload=e=>{const img=new Image();img.onerror=reject;img.onload=()=>{let w=img.width,h=img.height;const ratio=Math.min(maxW/w,maxH/h,1);w=Math.round(w*ratio);h=Math.round(h*ratio);const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);resolve(canvas.toDataURL('image/jpeg',quality||0.85));};img.src=e.target.result;};
+    reader.readAsDataURL(file);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// AI HELPERS
+// ═══════════════════════════════════════════════════
+function getCtx(){return{title:S.novel?.title||'Untitled',genre:S.novel?.genre||'Fiction',synopsis:S.novel?.synopsis||'Not defined',chars:(S.novel?.characters||[]).map(c=>c.name).join(', ')||'None'};}
+// ── MODEL SYNC — keeps all section dropdowns in sync ──
+function syncModel(val){
+  S.aiModel=val;
+  ['ai-model','write-model','char-model','notes-model'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.value!==val)el.value=val;
+  });
+}
+
+async function callAI(prompt,sys){
+  const model=S.aiModel||'openai';
+  if(!S.pollinationsToken){showToast('No Pollinations API key — please sign out and reconnect','error');return null;}
+  try{
+    const res=await fetch(`${GEN_API}/v1/chat/completions`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.pollinationsToken},
+      body:JSON.stringify({
+        model,
+        messages:[
+          {role:'system',content:sys||'You are a talented creative writing assistant. Write with vivid detail, strong voice, and narrative craft. Respond with ONLY the requested creative content — no preamble, no meta-commentary.'},
+          {role:'user',content:prompt}
+        ]
+      })
+    });
+    if(!res.ok){const err=await res.json().catch(()=>({}));showToast('AI error: '+(err?.error?.message||res.status),'error');return null;}
+    const data=await res.json();
+    return data?.choices?.[0]?.message?.content?.trim()||null;
+  }catch(e){showToast('AI error: '+e.message,'error');}
+  return null;
+}
+// ── MARKDOWN → HTML converter for AI output ──
+function mdToHtml(text){
+  // Escape HTML entities first on raw text
+  let h=text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+  // **bold**
+  h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  // *italic* or _italic_
+  h=h.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
+  h=h.replace(/_([^_\n]+)_/g,'<em>$1</em>');
+  // Straight double quotes → smart curly quotes (only if not already curly)
+  h=h.replace(/"([^"]+)"/g,'\u201C$1\u201D');
+  // Wrap paragraphs: split on double newline, wrap each in <p>
+  const paras=h.split(/\n{2,}/);
+  return paras.map(p=>p.trim()?'<p>'+p.replace(/\n/g,'<br>')+'</p>':'').filter(Boolean).join('\n');
+}
+
+// Master system prompt enforcing formatting habits
+const WRITING_SYSTEM=`You are a professional literary fiction author and writing assistant.
+FORMATTING RULES — always follow these without exception:
+1. All dialogue must use proper curly/smart quotes: \u201Clike this\u201D — never straight quotes "like this"
+2. Use *italics* (wrap in single asterisks) for: internal thoughts, foreign words, titles, emphasis, whispers
+3. Use **bold** (wrap in double asterisks) for: shocking revelations, sudden sounds, extremely important moments
+4. Never use markdown headers (##) or bullet points in fiction prose
+5. Paragraphs are separated by blank lines
+6. Start dialogue on a new paragraph for each new speaker
+Respond with ONLY the requested story content — no preamble, no commentary.`;
+
+async function aiContinue(){
+  if(S.aiBusy)return;
+  const ed=document.getElementById('main-editor');
+  const text=(ed.innerText||'').trim();
+  if(!text){showToast('Write something first!');return;}
+  const ctx=getCtx();
+  setEdAI(true,'⏳ Writing continuation...');
+  const r=await callAI(`Continue this ${ctx.genre} story seamlessly from where it ends. Match the exact style, voice, and pacing. Write 3-4 paragraphs. Remember: use *italics* for thoughts, **bold** for pivotal moments, and \u201Ccurly quotes\u201D for all dialogue.\n\nSTORY SO FAR (last section):\n${text.slice(-800)}`,WRITING_SYSTEM);
+  setEdAI(false);
+  if(r){ed.innerHTML+='<p><br></p>'+mdToHtml(r);updateChWc();scheduleSave();ed.scrollTop=ed.scrollHeight;}
+}
+async function aiImprove(){
+  if(S.aiBusy)return;
+  const text=(document.getElementById('main-editor').innerText||'').trim();
+  if(!text){showToast('Write something first!');return;}
+  setEdAI(true,'✨ Improving...');
+  const r=await callAI(`Rewrite this passage with elevated prose — richer imagery, stronger verbs, deeper sensory detail, better rhythm. Keep the same plot events and characters. Apply formatting: *italics* for thoughts/emphasis, \u201Ccurly quotes\u201D for all dialogue, **bold** only for truly pivotal moments.\n\n${text.slice(-800)}`,WRITING_SYSTEM);
+  setEdAI(false);if(r)showReviewPopup(r);
+}
+async function aiRewrite(){
+  if(S.aiBusy)return;
+  const sel=window.getSelection().toString().trim();
+  if(!sel){showToast('Select text to rewrite first');return;}
+  setEdAI(true,'🔁 Rewriting selection...');
+  const r=await callAI(`Rewrite this selected passage with more vivid description, stronger impact, and better flow. Keep the same meaning. Use *italics* for thoughts, \u201Ccurly quotes\u201D for dialogue.\n\n${sel}`,WRITING_SYSTEM);
+  setEdAI(false);if(r)showReviewPopup(r);
+}
+async function aiSummarize(){
+  if(S.aiBusy)return;
+  const text=(document.getElementById('main-editor').innerText||'').trim();
+  if(!text)return;
+  setEdAI(true,'📋 Summarizing...');
+  const r=await callAI(`Summarize this chapter in 2-3 clear sentences covering the key events and emotional beats:\n\n${text.slice(0,3000)}`);
+  setEdAI(false);if(r)alert('Chapter Summary:\n\n'+r);
+}
+function setEdAI(busy,msg){S.aiBusy=busy;const el=document.getElementById('editor-ai-status');el.style.display=busy?'inline':'none';el.textContent=msg||'';document.querySelectorAll('.ai-btn,.tool-btn').forEach(b=>b.disabled=busy);}
+function showReviewPopup(htmlOrText){
+  const html=mdToHtml(htmlOrText);
+  const p=document.createElement('div');
+  p.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px';
+  p.innerHTML=`<div style="width:680px;max-height:82vh;background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--gold);display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--gold)">✨ Review &amp; Accept</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button onclick="revFmt('bold')" style="width:26px;height:24px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-weight:800;font-size:13px">B</button>
+        <button onclick="revFmt('italic')" style="width:26px;height:24px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-style:italic;font-family:'Crimson Pro',serif;font-size:15px">I</button>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;margin-left:6px">✕</button>
+      </div>
+    </div>
+    <div id="rev-text" contenteditable="true" style="flex:1;min-height:300px;overflow-y:auto;padding:24px 36px;background:var(--editor-bg);color:var(--text);border:none;font-family:'Crimson Pro',serif;font-size:17px;line-height:1.85;outline:none">${html}</div>
+    <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0">
+      <button onclick="this.closest('div[style*=fixed]').remove()" class="btn-sm">Cancel</button>
+      <button class="btn-sm accent" onclick="acceptRev(this)">✅ Replace in Editor</button>
+    </div>
+  </div>`;
+  document.body.appendChild(p);
+}
+function revFmt(cmd){document.execCommand(cmd,false,null);}
+function acceptRev(btn){
+  const p=btn.closest('div[style*=fixed]');
+  const html=p.querySelector('#rev-text').innerHTML;
+  document.getElementById('main-editor').innerHTML=html;
+  updateChWc();scheduleSave();p.remove();
+}
+
+// ── AI STUDIO TOOLS ──
+const AI_TOOLS=[
+  {icon:'📖',text:'Chapter Outline',p:'Create a detailed chapter outline with numbered scenes for a {genre} novel "{title}". Synopsis: {synopsis}. Make each scene vivid and purposeful.'},
+  {icon:'💡',text:'Plot Twists',p:'Brainstorm 5 shocking plot twists for "{title}" ({genre}). Synopsis: {synopsis}. Each should be unexpected and change story direction dramatically.'},
+  {icon:'🌍',text:'World Building',p:'Create rich world-building for "{title}" ({genre}): geography, culture, magic/technology, political factions, history. Synopsis: {synopsis}'},
+  {icon:'💬',text:'Dialogue Scene',p:'Write a compelling, character-revealing dialogue scene for "{title}" ({genre}). Characters: {chars}. Rich subtext, distinct voices, action beats. Use \u201Ccurly quotes\u201D for all dialogue.'},
+  {icon:'😈',text:'Create Antagonist',p:'Design a compelling antagonist for "{title}" ({genre}). Name, appearance, backstory, motivation, methods, specific threat to protagonist. Synopsis: {synopsis}'},
+  {icon:'🌅',text:'Opening Hook',p:'Write 3 different opening hooks for "{title}" ({genre}): in medias res, provocative statement, atmospheric scene. Synopsis: {synopsis}'},
+  {icon:'🎭',text:'Scene Transition',p:'Write a cinematic scene transition for "{title}" bridging two locations/times while maintaining emotional momentum.'},
+  {icon:'🎬',text:'Climax Scene',p:'Write a devastating, emotionally satisfying climax scene for "{title}" ({genre}). Characters: {chars}. Synopsis: {synopsis}'},
+  {icon:'💔',text:'Emotional Moment',p:'Write a deeply emotional, character-defining moment for a character in "{title}" ({genre}). Characters: {chars}.'},
+  {icon:'🔍',text:'Story Analysis',p:'Analyze "{title}" ({genre}) and identify 5 potential plot problems with solutions.\nSynopsis: {synopsis}\nCharacters: {chars}'},
+];
+function renderTools(){document.getElementById('ai-tools-list').innerHTML=AI_TOOLS.map((t,i)=>`<button class="tool-btn" onclick="runTool(${i})"><span style="font-size:15px">${t.icon}</span>${t.text}</button>`).join('');}
+async function runTool(i){
+  if(S.aiBusy){showToast('AI busy, please wait...');return;}
+  const ctx=getCtx();
+  const p=AI_TOOLS[i].p.replace(/{title}/g,ctx.title).replace(/{genre}/g,ctx.genre).replace(/{synopsis}/g,ctx.synopsis).replace(/{chars}/g,ctx.chars);
+  setEdAI(true);document.getElementById('ai-studio-status').textContent='⏳ Generating...';document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">✍️ Writing...</em>';
+  const r=await callAI(p,WRITING_SYSTEM);setEdAI(false);
+  document.getElementById('ai-studio-status').textContent=r?'✅ Done!':'❌ Error';
+  document.getElementById('ai-output-area').innerHTML=r?mdToHtml(r):'<em>[Generation failed]</em>';
+}
+async function aiCustom(){
+  if(S.aiBusy)return;const prompt=document.getElementById('custom-prompt').value.trim();if(!prompt)return;
+  const ctx=getCtx();const full=`Novel: "${ctx.title}" | Genre: ${ctx.genre}\nSynopsis: ${ctx.synopsis}\nCharacters: ${ctx.chars}\n\n${prompt}`;
+  setEdAI(true);document.getElementById('ai-studio-status').textContent='⏳ Generating...';document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">✍️ Writing...</em>';
+  const r=await callAI(full,WRITING_SYSTEM);setEdAI(false);
+  document.getElementById('ai-studio-status').textContent=r?'✅ Done!':'❌ Error';
+  document.getElementById('ai-output-area').innerHTML=r?mdToHtml(r):'<em>[Generation failed]</em>';
+}
+async function aiSynopsis(){
+  if(S.aiBusy)return;const ctx=getCtx();const chs=(S.novel?.chapters||[]).slice(0,8).map(c=>c.title).join(', ');
+  setEdAI(true,'📋 Generating synopsis...');
+  const r=await callAI(`Write a compelling 3-paragraph back-cover synopsis for "${ctx.title}" (${ctx.genre}) by ${S.novel?.author||'Unknown'}.\nCharacters: ${ctx.chars}\nChapters: ${chs||'not defined'}\n\nMake it sound like a professional publisher wrote it.`);
+  setEdAI(false);if(r){document.getElementById('synopsis-text').value=r;S.novel.synopsis=r;scheduleSave();}
+}
+function copyAiOutput(){
+  const txt=document.getElementById('ai-output-area').innerText||'';
+  navigator.clipboard.writeText(txt).then(()=>showToast('Copied! ✓','success'));
+}
+function appendToChapter(){
+  if(S.chIdx===null){showToast('Select a chapter first');return;}
+  const html=document.getElementById('ai-output-area').innerHTML;
+  if(!html||html.includes('Ready to generate')){showToast('Nothing to append');return;}
+  const ed=document.getElementById('main-editor');
+  ed.innerHTML+='<p><br></p>'+html;
+  switchSection('write');updateChWc();scheduleSave();showToast('Added to chapter ✓','success');
+}
+function clearAiOutput(){document.getElementById('ai-output-area').innerHTML='<span style="color:var(--text-dim);font-style:italic">Ready to generate. Choose a tool or write a custom prompt ✨</span>';document.getElementById('ai-studio-status').textContent='Ready ✨';}
+
+// ═══════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'')+' show';clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtDate(iso){try{return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});}catch{return '';}}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  renderTools();
+  checkForBYOPKey();
+  const t=sessionStorage.getItem('nc_token'),u=sessionStorage.getItem('nc_user'),pt=sessionStorage.getItem('nc_poll_token');
+  if(t&&u&&pt){S.token=t;S.pollinationsToken=pt;S.user=JSON.parse(u);S.repoOwner=S.user.login;document.getElementById('user-avatar').src=S.user.avatar_url;document.getElementById('user-name').textContent=S.user.login;showScreen('screen-list');ensureRepo().then(loadNovels);}
+  document.getElementById('gh-token').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('pollinations-token').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('modal-new').addEventListener('click',e=>{if(e.target===document.getElementById('modal-new'))closeModal();});
+  document.getElementById('modal-export').addEventListener('click',e=>{if(e.target===document.getElementById('modal-export'))closeExportModal();});
+});
+</script>
+</body>
+</html>
