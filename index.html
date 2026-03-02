@@ -325,65 +325,33 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
   <div class="login-glow"></div>
   <div class="login-box">
     <div class="login-logo"><span class="icon">📖</span><h1>NovelCraft AI</h1><p>Write · Create · Publish — Powered by Pollinations AI</p></div>
-
-    <!-- STEP 1: GitHub Sign In -->
-    <div id="gh-step-idle">
-      <div style="font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:14px;line-height:1.6">
-        Sign in with GitHub to save your novels privately.<br>
-        <span style="color:var(--text-faint);font-size:11px">No password stored — uses GitHub's official Device Flow</span>
-      </div>
-      <button class="github-signin-btn" id="gh-signin-btn" onclick="startGithubDeviceFlow()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        Sign in with GitHub
-      </button>
+    <div class="login-step">
+      <strong>🔑 Step 1 — Connect GitHub (Free, No Signup)</strong>
+      1. Visit <a href="https://github.com/settings/tokens/new?scopes=repo&description=NovelCraft+Access" target="_blank">github.com → Settings → Tokens (classic)</a><br>
+      2. Select scope: <code>repo</code> → Generate token<br>
+      3. Paste below — novels save privately to your <code>novelcraft-novels</code> repo.
     </div>
-
-    <!-- STEP 1b: Device code display -->
-    <div id="gh-step-code" style="display:none">
-      <div style="text-align:center;padding:8px 0 16px">
-        <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px">Open the link below and enter this code:</div>
-        <div id="gh-user-code" style="font-family:'JetBrains Mono',monospace;font-size:28px;color:var(--gold);letter-spacing:6px;padding:14px;background:var(--surface);border:1px solid var(--gold-dim)">XXXX-XXXX</div>
-        <a id="gh-verify-link" href="https://github.com/login/device" target="_blank">
-          <button class="github-signin-btn" style="margin-top:12px;font-size:14px">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            Open GitHub to Authorize →
-          </button>
-        </a>
-        <div id="gh-poll-status" style="margin-top:12px;font-size:12px;color:var(--text-dim);font-style:italic;animation:pulse 1.5s infinite">⏳ Waiting for authorization...</div>
-        <button onclick="cancelDeviceFlow()" style="margin-top:8px;background:none;border:none;color:var(--text-faint);font-size:11px;cursor:pointer;text-decoration:underline">Cancel</button>
-      </div>
+    <div class="form-group"><label>GitHub Personal Access Token</label><input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/></div>
+    <div class="login-step" style="border-left-color:var(--teal)">
+      <strong style="color:var(--teal)">🤖 Step 2 — Pollinations AI (BYOP)</strong>
+      Click "Connect with Pollinations" below — it uses <code>enter.pollinations.ai</code> to create your key. Redirects back here automatically.
     </div>
-
-    <!-- GitHub Client ID note -->
-    <div id="gh-clientid-wrap" style="margin-top:10px;display:none">
-      <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">GitHub OAuth App Client ID</div>
-      <input type="text" id="gh-client-id" placeholder="e.g. Ov23li..." style="width:100%;padding:8px 12px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;margin-bottom:6px"/>
-      <div style="font-size:11px;color:var(--text-faint);line-height:1.6">
-        Create a free <a href="https://github.com/settings/applications/new" target="_blank" style="color:var(--teal)">GitHub OAuth App</a> → set callback URL to <code style="color:var(--teal)">http://localhost</code> → paste the Client ID above.
-      </div>
-      <button class="btn-primary" style="margin-top:10px" onclick="retryDeviceFlow()">Try Again →</button>
-    </div>
-
-    <!-- Hidden token field (kept for compatibility) -->
-    <input type="hidden" id="gh-token"/>
-
-    <div style="height:1px;background:var(--border);margin:18px 0"></div>
-
-    <!-- STEP 2: Pollinations -->
-    <div style="font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">🤖 Step 2 — AI Engine</div>
+    <!-- BYOP Connect Block -->
     <div class="byop-block">
-      <div class="byop-block-title">🌸 Pollinations AI (BYOP)</div>
-      <div class="byop-block-desc">One click to connect your AI engine. Uses <code>enter.pollinations.ai</code> — redirects back here automatically.</div>
+      <div class="byop-block-title">🌸 Bring Your Own Pollen (BYOP)</div>
+      <div class="byop-block-desc">One click to connect — uses your own Pollen budget. Self-regulating, secure, and gives access to all AI models.</div>
       <button class="byop-connect-btn" id="byopConnectBtn" onclick="connectWithPollinations()">🔗 Connect with Pollinations</button>
       <div class="byop-status-bar hidden" id="byopStatusBar">
         <span id="byopStatusText">✅ Connected</span>
         <button class="byop-disconnect" onclick="disconnectBYOP()">Disconnect</button>
       </div>
     </div>
-    <div class="byop-or">or enter key manually</div>
+    <div class="byop-or">or enter manually</div>
     <div class="form-group" style="margin-bottom:18px">
+      <label style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Pollinations API Key</label>
       <input type="password" id="pollinations-token" placeholder="Paste key from enter.pollinations.ai" style="width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s"/>
     </div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Connect →</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
@@ -727,84 +695,18 @@ async function ghListDir(path){const r=await gh('GET',`/repos/${S.repoOwner}/${R
 // AUTH
 // ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
-// GITHUB DEVICE FLOW AUTH
-// ═══════════════════════════════════════════════════
-let _devicePollTimer=null;
-
-async function startGithubDeviceFlow(){
-  const clientId=localStorage.getItem('nc_gh_client_id')||document.getElementById('gh-client-id')?.value.trim()||'';
-  if(!clientId){
-    // Show client ID input field
-    document.getElementById('gh-clientid-wrap').style.display='block';
-    document.getElementById('gh-signin-btn').style.display='none';
-    showError('Enter your GitHub OAuth App Client ID to continue (see instructions below)');
-    return;
-  }
-  document.getElementById('login-error').style.display='none';
-  const btn=document.getElementById('gh-signin-btn');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Connecting...';
-  try{
-    // Request device code — use a CORS proxy since GitHub doesn't allow browser CORS on this endpoint
-    const resp=await fetch('https://github.com/login/device/code',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({client_id:clientId,scope:'repo'})
-    });
-    if(!resp.ok) throw new Error('Failed to start device flow');
-    const d=await resp.json();
-    if(d.error) throw new Error(d.error_description||d.error);
-    localStorage.setItem('nc_gh_client_id',clientId);
-    showDeviceCode(d,clientId);
-  }catch(e){
-    btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> Sign in with GitHub';
-    showError('⚠️ '+e.message+'. Make sure your Client ID is correct and Device Flow is enabled on your GitHub OAuth App.');
-    document.getElementById('gh-clientid-wrap').style.display='block';
-  }
-}
-
-function showDeviceCode(d,clientId){
-  document.getElementById('gh-step-idle').style.display='none';
-  document.getElementById('gh-step-code').style.display='block';
-  document.getElementById('gh-clientid-wrap').style.display='none';
-  document.getElementById('gh-user-code').textContent=d.user_code;
-  document.getElementById('gh-verify-link').href=d.verification_uri||'https://github.com/login/device';
-  window.open(d.verification_uri||'https://github.com/login/device','_blank');
-  const interval=(d.interval||5)*1000;
-  _devicePollTimer=setInterval(()=>pollDeviceToken(d.device_code,clientId),interval);
-}
-
-async function pollDeviceToken(deviceCode,clientId){
-  try{
-    const resp=await fetch('https://github.com/login/oauth/access_token',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({client_id:clientId,device_code:deviceCode,grant_type:'urn:ietf:params:oauth:grant-type:device_code'})
-    });
-    const d=await resp.json();
-    if(d.access_token){
-      clearInterval(_devicePollTimer);
-      document.getElementById('gh-poll-status').textContent='✅ Authorized! Signing in...';
-      await completeLogin(d.access_token);
-    }else if(d.error==='authorization_pending'){
-      // still waiting, normal
-    }else if(d.error==='slow_down'){
-      clearInterval(_devicePollTimer);_devicePollTimer=setInterval(()=>pollDeviceToken(deviceCode,clientId),6000);
-    }else if(d.error==='expired_token'){
-      clearInterval(_devicePollTimer);cancelDeviceFlow();showError('Code expired. Please try again.');
-    }else if(d.error){
-      clearInterval(_devicePollTimer);cancelDeviceFlow();showError('Auth error: '+d.error_description);
-    }
-  }catch(e){ /* network error, keep polling */ }
-}
-
-async function completeLogin(token){
+async function doLogin(){
+  const token=document.getElementById('gh-token').value.trim();
   let pollToken=document.getElementById('pollinations-token').value.trim();
   if(!pollToken) pollToken=localStorage.getItem('nc_poll_key')||'';
-  if(!pollToken){showError('Please connect with Pollinations (Step 2) or paste your API key');cancelDeviceFlow();return;}
-  document.getElementById('gh-token').value=token;
+  if(!token){showError('Please enter your GitHub token');return;}
+  if(!pollToken){showError('Please connect with Pollinations (Step 2) or paste your API key');return;}
+  const btn=document.getElementById('login-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Connecting...';
+  document.getElementById('login-error').style.display='none';
   S.token=token;S.pollinationsToken=pollToken;
   const r=await gh('GET','/user');
-  if(!r.ok){S.token=null;S.pollinationsToken=null;cancelDeviceFlow();showError('❌ Could not fetch GitHub profile. Try again.');return;}
+  if(!r.ok){S.token=null;S.pollinationsToken=null;btn.disabled=false;btn.textContent='Connect →';showError('❌ Invalid GitHub token. Check it and try again.');return;}
   S.user=r.data;S.repoOwner=r.data.login;
   sessionStorage.setItem('nc_token',token);
   sessionStorage.setItem('nc_poll_token',pollToken);
@@ -814,33 +716,7 @@ async function completeLogin(token){
   showScreen('screen-list');showToast('Welcome, '+r.data.login+' 👋');
   await ensureRepo();await loadNovels();
 }
-
-function cancelDeviceFlow(){
-  if(_devicePollTimer){clearInterval(_devicePollTimer);_devicePollTimer=null;}
-  document.getElementById('gh-step-idle').style.display='block';
-  document.getElementById('gh-step-code').style.display='none';
-  const btn=document.getElementById('gh-signin-btn');
-  btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> Sign in with GitHub';
-}
-
-function retryDeviceFlow(){
-  const cid=document.getElementById('gh-client-id').value.trim();
-  if(cid) localStorage.setItem('nc_gh_client_id',cid);
-  document.getElementById('gh-clientid-wrap').style.display='none';
-  document.getElementById('gh-signin-btn').style.display='block';
-  startGithubDeviceFlow();
-}
-
-async function doLogin(){
-  // Legacy fallback (kept for session restore)
-  const token=document.getElementById('gh-token').value.trim();
-  let pollToken=document.getElementById('pollinations-token').value.trim();
-  if(!pollToken) pollToken=localStorage.getItem('nc_poll_key')||'';
-  if(!token||!pollToken) return;
-  await completeLogin(token);
-}
-
-function logout(){sessionStorage.clear();S.token=null;S.pollinationsToken=null;S.user=null;S.novels=[];document.getElementById('gh-token').value='';document.getElementById('pollinations-token').value='';cancelDeviceFlow();updateBYOPStatus();showScreen('screen-login');}
+function logout(){sessionStorage.clear();S.token=null;S.pollinationsToken=null;S.user=null;S.novels=[];document.getElementById('gh-token').value='';document.getElementById('pollinations-token').value='';document.getElementById('login-btn').disabled=false;document.getElementById('login-btn').textContent='Connect →';updateBYOPStatus();showScreen('screen-login');}
 
 // ═══════════════════════════════════════════════════
 // BYOP — Bring Your Own Pollen
@@ -848,7 +724,6 @@ function logout(){sessionStorage.clear();S.token=null;S.pollinationsToken=null;S
 const BYOP_ALL_MODELS='openai,openai-large,perplexity-fast,perplexity-reasoning,gptimage';
 
 function connectWithPollinations(){
-  // Save the GitHub token temporarily so it survives the redirect
   const ghVal=document.getElementById('gh-token').value.trim();
   if(ghVal) localStorage.setItem('nc_pending_gh',ghVal);
   const redirectUrl=window.location.href.split('#')[0];
@@ -863,9 +738,7 @@ function checkForBYOPKey(){
     const apiKey=params.get('api_key');
     if(apiKey){
       localStorage.setItem('nc_poll_key',apiKey);
-      // Clear hash from URL
       history.replaceState(null,null,window.location.pathname+window.location.search);
-      // Restore GitHub token if it was saved before redirect
       const pendingGh=localStorage.getItem('nc_pending_gh');
       if(pendingGh){document.getElementById('gh-token').value=pendingGh;localStorage.removeItem('nc_pending_gh');}
       updateBYOPStatus();
