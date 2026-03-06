@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NovelCraft AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,20 +19,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 #screen-login::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(201,168,76,.03) 40px,rgba(201,168,76,.03) 41px);pointer-events:none}
 .login-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);top:-100px;left:-100px;pointer-events:none;animation:glowPulse 4s ease-in-out infinite}
 @keyframes glowPulse{0%,100%{opacity:.5}50%{opacity:1}}
-.login-box{position:relative;z-index:1;width:520px;max-height:95vh;overflow-y:auto;padding:40px 48px;background:rgba(13,13,24,.95);border:1px solid var(--border);border-top:2px solid var(--gold);backdrop-filter:blur(20px);box-shadow:var(--shadow),0 0 80px rgba(201,168,76,.05);animation:fadeUp .6s ease}
+.login-box{position:relative;z-index:1;width:500px;max-height:95vh;overflow-y:auto;padding:40px 48px;background:rgba(13,13,24,.95);border:1px solid var(--border);border-top:2px solid var(--gold);backdrop-filter:blur(20px);box-shadow:var(--shadow),0 0 80px rgba(201,168,76,.05);animation:fadeUp .6s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-.login-logo{text-align:center;margin-bottom:32px}.login-logo .icon{font-size:48px;display:block;margin-bottom:12px}
+.login-logo{text-align:center;margin-bottom:28px}.login-logo .icon{font-size:48px;display:block;margin-bottom:12px}
 .login-logo h1{font-family:'Playfair Display',serif;font-size:30px;color:var(--gold);letter-spacing:.5px}
 .login-logo p{color:var(--text-dim);font-size:14px;margin-top:6px}
-.login-step{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;margin-bottom:22px;font-size:13px;line-height:1.8;color:var(--text-dim)}
-.login-step strong{color:var(--gold);display:block;margin-bottom:4px}
-.login-step code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg);padding:2px 6px;border-radius:3px;color:var(--teal)}
-.login-step a{color:var(--gold);text-decoration:none}.login-step a:hover{text-decoration:underline}
+.login-info{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;margin-bottom:22px;font-size:13px;line-height:1.8;color:var(--text-dim)}
+.login-info strong{color:var(--gold);display:block;margin-bottom:4px}
+.login-info code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg);padding:2px 6px;border-radius:3px;color:var(--teal)}
 .form-group{margin-bottom:16px}.form-group label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
 .form-group input{width:100%;padding:12px 16px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;transition:border-color .2s}
 .form-group input:focus{border-color:var(--gold)}.form-group input::placeholder{color:var(--text-faint)}
 .btn-primary{width:100%;padding:14px;cursor:pointer;background:var(--gold);color:#08080f;font-family:'Playfair Display',serif;font-size:16px;font-weight:600;border:none;letter-spacing:.5px;transition:all .2s}
 .btn-primary:hover{background:#d4b05a;transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,.3)}.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-skip{width:100%;padding:11px;cursor:pointer;background:transparent;color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:15px;border:1px solid var(--border);letter-spacing:.3px;transition:all .2s;margin-top:8px}
+.btn-skip:hover{border-color:var(--text-dim);color:var(--text)}
 .login-error{color:var(--coral);font-size:13px;margin-top:12px;text-align:center;display:none}
 .byop-block{background:rgba(76,184,160,.05);border:1px solid rgba(76,184,160,.25);border-left:3px solid var(--teal);padding:16px;margin-bottom:18px}
 .byop-block-title{font-size:13px;color:var(--teal);font-weight:600;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:7px}
@@ -47,19 +48,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 .byop-or::before,.byop-or::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
 .byop-or::before{left:0}.byop-or::after{right:0}
 
-/* ── GITHUB SIGN IN BUTTON ── */
-.github-signin-btn{width:100%;padding:13px 16px;cursor:pointer;background:#238636;color:#fff;font-family:'Playfair Display',serif;font-size:16px;font-weight:600;border:1px solid #2ea043;letter-spacing:.3px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
-.github-signin-btn:hover{background:#2ea043;transform:translateY(-1px);box-shadow:0 4px 20px rgba(35,134,54,.4)}
-.github-signin-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-
 /* ── TOPBAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
 .topbar-brand{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)}
-.user-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--text-dim)}
-.user-badge img{width:22px;height:22px;border-radius:50%}
-.topbar-right{display:flex;align-items:center;gap:10px}
+.local-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--bg2);border:1px solid var(--border);font-size:12px;color:var(--text-faint)}
+.topbar-right{display:flex;align-items:center;gap:8px}
 .btn-sm{padding:7px 16px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Crimson Pro',serif;font-size:14px;transition:all .2s}
 .btn-sm:hover{border-color:var(--gold);color:var(--gold)}.btn-sm.accent{background:var(--gold);color:#08080f;border-color:var(--gold);font-weight:600}.btn-sm.accent:hover{background:#d4b05a}.btn-sm.danger{border-color:var(--danger);color:var(--danger)}.btn-sm.danger:hover{background:var(--danger);color:#fff}
+.btn-sm.teal{border-color:var(--teal);color:var(--teal)}.btn-sm.teal:hover{background:var(--teal);color:#08080f}
 
 /* ── LIBRARY LIST ── */
 .list-main{flex:1;overflow-y:auto;padding:32px 40px}
@@ -76,6 +72,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 .novel-card:hover .card-actions{opacity:1}
 .card-btn{width:26px;height:26px;border:1px solid var(--border);background:var(--bg);color:var(--text-dim);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .card-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+.card-btn.dl:hover{border-color:var(--teal);color:var(--teal)}
 .empty-state{text-align:center;padding:80px 40px;color:var(--text-dim);grid-column:1/-1}
 .empty-state .emoji{font-size:56px;display:block;margin-bottom:16px}.empty-state h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);margin-bottom:8px}
 
@@ -121,7 +118,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 .ch-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);flex-shrink:0}.ch-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ch-del{opacity:0;font-size:11px;color:var(--danger);flex-shrink:0}.chapter-item:hover .ch-del{opacity:1}
 
-/* ── SIDEBAR NAV (AI Studio, Cover Art, etc.) ── */
+/* ── SIDEBAR NAV ── */
 .sidebar-nav{border-top:1px solid var(--border);flex-shrink:0;padding:8px}
 .sidebar-nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;cursor:pointer;font-size:13px;border:1px solid transparent;margin-bottom:3px;color:var(--text-dim);transition:all .15s;border-radius:0}
 .sidebar-nav-item:hover{background:var(--surface);color:var(--text);border-color:var(--border)}
@@ -131,8 +128,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 
 /* ── CONTENT AREA ── */
 .editor-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
-
-/* Content section header (replaces tab bar) */
 .content-section-bar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:44px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
 .content-section-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);display:flex;align-items:center;gap:8px}
 .content-section-actions{display:flex;gap:6px;align-items:center}
@@ -143,7 +138,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 /* ── WRITE TAB ── */
 .ch-title-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
 .ch-title-bar label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
-.ch-title-input{flex:1;padding:5px 8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Playfair Display',serif;font-size:14px;outline:none;transition:border-color .15s}
+.ch-title-input{flex:1;padding:5px 8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Playfair Display',serif;font-size:14px;outline:none;transition:border-color .15px}
 .ch-title-input:focus{border-color:var(--gold)}.ch-wordcount{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-faint);flex-shrink:0}
 .main-editor{flex:1;overflow-y:auto;outline:none;background:var(--editor-bg);color:var(--text);font-family:'Crimson Pro',serif;font-size:18px;line-height:1.85;padding:36px 80px;border:none;caret-color:var(--gold);white-space:pre-wrap;word-wrap:break-word}
 .main-editor:empty::before{content:attr(data-placeholder);color:var(--text-faint);font-style:italic;pointer-events:none}
@@ -246,6 +241,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 .modal{width:460px;background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--gold);padding:30px;animation:fadeUp .3s ease}
 .modal h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold);margin-bottom:18px}.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 
+/* ── SETTINGS MODAL ── */
+.settings-modal{width:420px}
+.settings-modal .settings-desc{font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:18px}
+
 /* ── TOAST ── */
 .toast{position:fixed;bottom:22px;right:22px;z-index:200;padding:11px 18px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);color:var(--text);font-size:14px;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none}
 .toast.show{transform:none;opacity:1}.toast.success{border-left-color:var(--success)}.toast.error{border-left-color:var(--danger)}
@@ -320,38 +319,58 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
   </div>
 </div>
 
-<!-- LOGIN SCREEN -->
+<!-- Settings Modal -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal settings-modal">
+    <h2>⚙️ AI Settings</h2>
+    <p class="settings-desc">Connect Pollinations AI for all AI writing features. Your key is stored locally in your browser.</p>
+    <div class="byop-block">
+      <div class="byop-block-title">🌸 Bring Your Own Pollen (BYOP)</div>
+      <div class="byop-block-desc">One click to connect — uses your own Pollen budget. Self-regulating, secure, access to all AI models.</div>
+      <button class="byop-connect-btn" id="byopConnectBtn2" onclick="connectWithPollinations()">🔗 Connect with Pollinations</button>
+      <div class="byop-status-bar hidden" id="byopStatusBar2">
+        <span id="byopStatusText2">✅ Connected</span>
+        <button class="byop-disconnect" onclick="disconnectBYOP()">Disconnect</button>
+      </div>
+    </div>
+    <div class="byop-or">or enter manually</div>
+    <div class="form-group" style="margin-bottom:8px">
+      <label>Pollinations API Key</label>
+      <input type="password" id="settings-poll-key" placeholder="Paste key from enter.pollinations.ai"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeSettings()">Cancel</button>
+      <button class="btn-sm accent" onclick="saveSettings()">Save →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN / SETUP SCREEN -->
 <div class="screen active" id="screen-login">
   <div class="login-glow"></div>
   <div class="login-box">
-    <div class="login-logo"><span class="icon">📖</span><h1>NovelCraft AI</h1><p>Write · Create · Publish — Powered by Pollinations AI</p></div>
-    <div class="login-step">
-      <strong>🔑 Step 1 — Connect GitHub (Free, No Signup)</strong>
-      1. Visit <a href="https://github.com/settings/tokens/new?scopes=repo&description=NovelCraft+Access" target="_blank">github.com → Settings → Tokens (classic)</a><br>
-      2. Select scope: <code>repo</code> → Generate token<br>
-      3. Paste below — novels save privately to your <code>novelcraft-novels</code> repo.
-    </div>
-    <div class="form-group"><label>GitHub Personal Access Token</label><input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/></div>
-    <div class="login-step" style="border-left-color:var(--teal)">
-      <strong style="color:var(--teal)">🤖 Step 2 — Pollinations AI (BYOP)</strong>
-      Click "Connect with Pollinations" below — it uses <code>enter.pollinations.ai</code> to create your key. Redirects back here automatically.
+    <div class="login-logo"><span class="icon">📖</span><h1>NovelCraft AI</h1><p>Write · Create · Publish — 100% Local Storage</p></div>
+    <div class="login-info">
+      <strong>💾 How it works</strong>
+      Your novels are saved automatically to your browser's local storage — no account needed, no internet required for writing. Connect Pollinations below to unlock AI features.
     </div>
     <!-- BYOP Connect Block -->
     <div class="byop-block">
-      <div class="byop-block-title">🌸 Bring Your Own Pollen (BYOP)</div>
-      <div class="byop-block-desc">One click to connect — uses your own Pollen budget. Self-regulating, secure, and gives access to all AI models.</div>
+      <div class="byop-block-title">🤖 Step 1 — Connect Pollinations AI (Optional)</div>
+      <div class="byop-block-desc">One click to connect for AI writing assistance. Uses <code>enter.pollinations.ai</code> — free tier available. Redirects back here automatically.</div>
       <button class="byop-connect-btn" id="byopConnectBtn" onclick="connectWithPollinations()">🔗 Connect with Pollinations</button>
       <div class="byop-status-bar hidden" id="byopStatusBar">
         <span id="byopStatusText">✅ Connected</span>
         <button class="byop-disconnect" onclick="disconnectBYOP()">Disconnect</button>
       </div>
     </div>
-    <div class="byop-or">or enter manually</div>
+    <div class="byop-or">or enter key manually</div>
     <div class="form-group" style="margin-bottom:18px">
-      <label style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Pollinations API Key</label>
-      <input type="password" id="pollinations-token" placeholder="Paste key from enter.pollinations.ai" style="width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s"/>
+      <label>Pollinations API Key</label>
+      <input type="password" id="pollinations-token" placeholder="Paste key from enter.pollinations.ai"/>
     </div>
-    <button class="btn-primary" id="login-btn" onclick="doLogin()">Connect →</button>
+    <button class="btn-primary" id="login-btn" onclick="doSetup()">🚀 Start Writing →</button>
+    <button class="btn-skip" onclick="skipSetup()">✍️ Skip & Start Writing (no AI)</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
@@ -361,9 +380,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
   <div class="topbar">
     <div class="topbar-brand"><span>📖</span> NovelCraft AI</div>
     <div class="topbar-right">
-      <div class="user-badge"><img id="user-avatar" src="" alt=""/><span id="user-name"></span></div>
+      <div class="local-badge">💾 Local Storage</div>
+      <button class="btn-sm teal" onclick="importNovelFile()">📂 Import .txt</button>
       <button class="btn-sm accent" onclick="openModal()">+ New Novel</button>
-      <button class="btn-sm" onclick="logout()">Sign Out</button>
+      <button class="btn-sm" onclick="openSettings()">⚙️ AI Setup</button>
     </div>
   </div>
   <div class="list-main">
@@ -391,6 +411,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
       <div class="topbar-nav-item" id="nav-ai" onclick="switchSection('ai')">
         <span>🧠</span><span>AI Studio</span>
       </div>
+      <div class="topbar-nav-item active" id="nav-write" onclick="switchSection('write')">
+        <span>✍️</span><span>Write</span>
+      </div>
       <div class="topbar-nav-item" id="nav-cover" onclick="switchSection('cover')">
         <span>🎨</span><span>Cover Art</span>
       </div>
@@ -403,6 +426,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
     </div>
     <div class="save-status" id="save-status">All saved ✓</div>
     <div style="display:flex;gap:6px">
+      <button class="btn-sm teal" onclick="downloadNovelFile()" title="Download as .txt file for backup/transfer">📥 Save File</button>
       <button class="btn-sm" onclick="openExportModal()">📤 Export</button>
       <button class="btn-sm accent" onclick="saveNowManual()">💾 Save</button>
     </div>
@@ -438,7 +462,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
         </div>
         <div id="chapter-list"></div>
       </div>
-
     </div>
 
     <!-- ── MAIN CONTENT ── -->
@@ -477,12 +500,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
           <input type="file" id="chapter-img-input" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none" onchange="onChapterImageSelected(event)"/>
           <div class="model-pill" style="margin-left:auto;flex-shrink:0">
             <label>Model:</label>
-            <select id="write-model" onchange="syncModel(this.value)">
-              <option value="openai">GPT-4o</option>
-              <option value="openai-large">GPT-4o Large</option>
-              <option value="perplexity-fast">Perplexity Fast</option>
-              <option value="perplexity-reasoning">Perplexity Reasoning</option>
-            </select>
+            <select id="write-model" onchange="syncModel(this.value)"><option value="openai">GPT-4o</option>
+                  <option value="openai-fast">GPT-4o Mini (Fast)</option>
+                  <option value="claude-fast">Claude Fast</option>
+                  <option value="gemini-fast">Gemini Fast</option>
+                  <option value="gemini-search">Gemini Search</option>
+                  <option value="nova-fast">Nova Fast</option>
+                  <option value="perplexity-fast">Perplexity Fast</option>
+                  <option value="perplexity-reasoning">Perplexity Reasoning</option>
+                  <option value="mistral">Mistral</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="minimax">MiniMax</option>
+                  <option value="qwen-character">Qwen Character</option>
+                  <option value="qwen-coder">Qwen Coder</option>
+                  <option value="qwen-safety">Qwen Safety</option>
+                  <option value="kimi">Kimi</option>
+                  <option value="glm">GLM</option>
+                </select>
           </div>
           <span class="ai-busy-label" id="editor-ai-status" style="display:none"></span>
         </div>
@@ -504,11 +538,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
               <label>Custom Prompt</label>
               <textarea id="custom-prompt" placeholder="Write something creative about..."></textarea>
               <div class="model-row"><label>Model:</label>
-                <select id="ai-model" onchange="syncModel(this.value)">
-                  <option value="openai">GPT-4o</option>
-                  <option value="openai-large">GPT-4o Large</option>
+                <select id="ai-model" onchange="syncModel(this.value)"><option value="openai">GPT-4o</option>
+                  <option value="openai-fast">GPT-4o Mini (Fast)</option>
+                  <option value="claude-fast">Claude Fast</option>
+                  <option value="gemini-fast">Gemini Fast</option>
+                  <option value="gemini-search">Gemini Search</option>
+                  <option value="nova-fast">Nova Fast</option>
                   <option value="perplexity-fast">Perplexity Fast</option>
                   <option value="perplexity-reasoning">Perplexity Reasoning</option>
+                  <option value="mistral">Mistral</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="minimax">MiniMax</option>
+                  <option value="qwen-character">Qwen Character</option>
+                  <option value="qwen-coder">Qwen Coder</option>
+                  <option value="qwen-safety">Qwen Safety</option>
+                  <option value="kimi">Kimi</option>
+                  <option value="glm">GLM</option>
                 </select>
               </div>
               <button class="btn-sm accent" style="width:100%;padding:9px;margin-top:4px" onclick="aiCustom()">🚀 Generate</button>
@@ -553,7 +598,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
                 <span class="uz-text">Click to upload cover image</span>
                 <span class="uz-sub">JPG, PNG, WebP — auto-resized to 600×900</span>
               </button>
-              <p style="font-size:11px;color:var(--text-faint);line-height:1.6;margin-top:6px">Uploaded cover is stored in your GitHub repo and used in EPUB/PDF exports.</p>
+              <p style="font-size:11px;color:var(--text-faint);line-height:1.6;margin-top:6px">Uploaded cover is stored locally and used in EPUB/PDF exports.</p>
             </div>
 
             <!-- AI PANEL -->
@@ -591,12 +636,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
           <div class="content-section-actions">
             <div class="model-pill">
               <label>Model:</label>
-              <select id="char-model" onchange="syncModel(this.value)">
-                <option value="openai">GPT-4o</option>
-                <option value="openai-large">GPT-4o Large</option>
-                <option value="perplexity-fast">Perplexity Fast</option>
-                <option value="perplexity-reasoning">Perplexity Reasoning</option>
-              </select>
+              <select id="char-model" onchange="syncModel(this.value)"><option value="openai">GPT-4o</option>
+                  <option value="openai-fast">GPT-4o Mini (Fast)</option>
+                  <option value="claude-fast">Claude Fast</option>
+                  <option value="gemini-fast">Gemini Fast</option>
+                  <option value="gemini-search">Gemini Search</option>
+                  <option value="nova-fast">Nova Fast</option>
+                  <option value="perplexity-fast">Perplexity Fast</option>
+                  <option value="perplexity-reasoning">Perplexity Reasoning</option>
+                  <option value="mistral">Mistral</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="minimax">MiniMax</option>
+                  <option value="qwen-character">Qwen Character</option>
+                  <option value="qwen-coder">Qwen Coder</option>
+                  <option value="qwen-safety">Qwen Safety</option>
+                  <option value="kimi">Kimi</option>
+                  <option value="glm">GLM</option>
+                </select>
             </div>
             <button class="btn-sm" onclick="aiCreateChar()">🤖 AI Generate</button>
             <button class="btn-sm accent" onclick="addCharacter()">+ Add</button>
@@ -631,12 +687,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
           <div class="content-section-actions">
             <div class="model-pill">
               <label>Model:</label>
-              <select id="notes-model" onchange="syncModel(this.value)">
-                <option value="openai">GPT-4o</option>
-                <option value="openai-large">GPT-4o Large</option>
-                <option value="perplexity-fast">Perplexity Fast</option>
-                <option value="perplexity-reasoning">Perplexity Reasoning</option>
-              </select>
+              <select id="notes-model" onchange="syncModel(this.value)"><option value="openai">GPT-4o</option>
+                  <option value="openai-fast">GPT-4o Mini (Fast)</option>
+                  <option value="claude-fast">Claude Fast</option>
+                  <option value="gemini-fast">Gemini Fast</option>
+                  <option value="gemini-search">Gemini Search</option>
+                  <option value="nova-fast">Nova Fast</option>
+                  <option value="perplexity-fast">Perplexity Fast</option>
+                  <option value="perplexity-reasoning">Perplexity Reasoning</option>
+                  <option value="mistral">Mistral</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="minimax">MiniMax</option>
+                  <option value="qwen-character">Qwen Character</option>
+                  <option value="qwen-coder">Qwen Coder</option>
+                  <option value="qwen-safety">Qwen Safety</option>
+                  <option value="kimi">Kimi</option>
+                  <option value="glm">GLM</option>
+                </select>
             </div>
             <button class="btn-sm" onclick="aiSynopsis()">🤖 AI Synopsis</button>
           </div>
@@ -658,79 +725,92 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Crimso
 </div><!-- end screen-editor -->
 
 <script>
-const S={token:null,user:null,repoOwner:null,novels:[],novel:null,novelSha:null,chIdx:null,aiBusy:false,saveTimer:null,coverUrl:null,charIdx:null,currentSection:'write',pollinationsToken:null,aiModel:'openai'};
-const REPO='novelcraft-novels',API='https://api.github.com',GEN_API='https://gen.pollinations.ai',IMG_API='https://image.pollinations.ai/prompt/';
+// ═══════════════════════════════════════════════════
+// STATE — no GitHub, pure local
+// ═══════════════════════════════════════════════════
+const S={novels:[],novel:null,chIdx:null,aiBusy:false,saveTimer:null,coverUrl:null,charIdx:null,currentSection:'write',pollinationsToken:null,aiModel:'openai',chSummaryCache:{}};
+const GEN_API='https://gen.pollinations.ai',IMG_API='https://image.pollinations.ai/prompt/';
+// Dedicated model for background chapter summarisation — fast & lightweight
+const SUMMARY_MODEL='nova-fast';
 
 // ═══════════════════════════════════════════════════
-// GITHUB API
+// LOCAL STORAGE — novel persistence
 // ═══════════════════════════════════════════════════
-async function gh(method,path,body){
-  const opts={method,headers:{'Authorization':'token '+S.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}};
-  if(body)opts.body=JSON.stringify(body);
-  const res=await fetch(API+path,opts);
-  return{ok:res.ok,status:res.status,data:res.status!==204?await res.json():null};
+function getNovelIds(){
+  try{return JSON.parse(localStorage.getItem('nc_novel_ids')||'[]');}catch{return[];}
 }
-async function ensureRepo(){
-  const r=await gh('GET',`/repos/${S.repoOwner}/${REPO}`);
-  if(r.ok)return true;
-  if(r.status===404){const c=await gh('POST','/user/repos',{name:REPO,description:'My NovelCraft AI library',private:true,auto_init:true});if(c.ok){await new Promise(r=>setTimeout(r,1500));return true;}}
-  return false;
+function saveNovelIds(ids){
+  localStorage.setItem('nc_novel_ids',JSON.stringify(ids));
 }
-async function ghGetFile(path){
-  const r=await gh('GET',`/repos/${S.repoOwner}/${REPO}/contents/${path}`);
-  if(!r.ok)return null;
-  const content=decodeURIComponent(escape(atob(r.data.content.replace(/\n/g,''))));
-  return{content:JSON.parse(content),sha:r.data.sha};
+function getNovelData(id){
+  try{const raw=localStorage.getItem('nc_novel_'+id);return raw?JSON.parse(raw):null;}catch{return null;}
 }
-async function ghPutFile(path,content,sha,msg){
-  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(content,null,2))));
-  const body={message:msg||'NovelCraft save',content:encoded};
-  if(sha)body.sha=sha;
-  return await gh('PUT',`/repos/${S.repoOwner}/${REPO}/contents/${path}`,body);
+function setNovelData(id,data){
+  try{
+    localStorage.setItem('nc_novel_'+id,JSON.stringify(data));
+    return true;
+  }catch(e){
+    if(e.name==='QuotaExceededError'){showToast('⚠ Storage full! Download a backup file.','error');}
+    return false;
+  }
 }
-async function ghDeleteFile(path,sha){return await gh('DELETE',`/repos/${S.repoOwner}/${REPO}/contents/${path}`,{message:'Delete novel',sha});}
-async function ghListDir(path){const r=await gh('GET',`/repos/${S.repoOwner}/${REPO}/contents/${path}`);return(!r.ok||!Array.isArray(r.data))?[]:r.data;}
+function removeNovelData(id){
+  localStorage.removeItem('nc_novel_'+id);
+  const ids=getNovelIds().filter(i=>i!==id);
+  saveNovelIds(ids);
+}
 
 // ═══════════════════════════════════════════════════
-// AUTH
+// AUTH — Pollinations only
 // ═══════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════
-async function doLogin(){
-  const token=document.getElementById('gh-token').value.trim();
+function doSetup(){
   let pollToken=document.getElementById('pollinations-token').value.trim();
-  if(!pollToken) pollToken=localStorage.getItem('nc_poll_key')||'';
-  if(!token){showError('Please enter your GitHub token');return;}
-  if(!pollToken){showError('Please connect with Pollinations (Step 2) or paste your API key');return;}
-  const btn=document.getElementById('login-btn');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Connecting...';
-  document.getElementById('login-error').style.display='none';
-  S.token=token;S.pollinationsToken=pollToken;
-  const r=await gh('GET','/user');
-  if(!r.ok){S.token=null;S.pollinationsToken=null;btn.disabled=false;btn.textContent='Connect →';showError('❌ Invalid GitHub token. Check it and try again.');return;}
-  S.user=r.data;S.repoOwner=r.data.login;
-  sessionStorage.setItem('nc_token',token);
-  sessionStorage.setItem('nc_poll_token',pollToken);
-  sessionStorage.setItem('nc_user',JSON.stringify(r.data));
-  document.getElementById('user-avatar').src=r.data.avatar_url;
-  document.getElementById('user-name').textContent=r.data.login;
-  showScreen('screen-list');showToast('Welcome, '+r.data.login+' 👋');
-  await ensureRepo();await loadNovels();
+  if(!pollToken)pollToken=localStorage.getItem('nc_poll_key')||'';
+  if(!pollToken){showLoginError('Please connect with Pollinations first, or click "Skip" to write without AI.');return;}
+  localStorage.setItem('nc_poll_key',pollToken);
+  S.pollinationsToken=pollToken;
+  enterApp();
 }
-function logout(){sessionStorage.clear();S.token=null;S.pollinationsToken=null;S.user=null;S.novels=[];document.getElementById('gh-token').value='';document.getElementById('pollinations-token').value='';document.getElementById('login-btn').disabled=false;document.getElementById('login-btn').textContent='Connect →';updateBYOPStatus();showScreen('screen-login');}
+function skipSetup(){
+  S.pollinationsToken=null;
+  enterApp();
+}
+function enterApp(){
+  showScreen('screen-list');
+  loadNovels();
+  showToast('Welcome to NovelCraft AI 📖','success');
+}
+function showLoginError(msg){const el=document.getElementById('login-error');el.textContent=msg;el.style.display='block';}
+
+// ── SETTINGS MODAL ──
+function openSettings(){
+  updateBYOPStatus();
+  const key=localStorage.getItem('nc_poll_key')||'';
+  document.getElementById('settings-poll-key').value=key?'••••••••':'';
+  document.getElementById('modal-settings').classList.add('open');
+}
+function closeSettings(){document.getElementById('modal-settings').classList.remove('open');}
+function saveSettings(){
+  const val=document.getElementById('settings-poll-key').value.trim();
+  if(val&&!val.startsWith('•')){
+    localStorage.setItem('nc_poll_key',val);
+    S.pollinationsToken=val;
+    showToast('Pollinations key saved ✓','success');
+  }
+  closeSettings();
+  updateBYOPStatus();
+}
 
 // ═══════════════════════════════════════════════════
 // BYOP — Bring Your Own Pollen
 // ═══════════════════════════════════════════════════
-const BYOP_ALL_MODELS='openai,openai-large,perplexity-fast,perplexity-reasoning,gptimage';
+const BYOP_ALL_MODELS = 'openai,openai-fast,claude-fast,gemini-fast,gemini-search,nova-fast,perplexity-fast,perplexity-reasoning,mistral,deepseek,minimax,qwen-character,qwen-coder,qwen-safety,kimi,glm,flux,gptimage';
 
 function connectWithPollinations(){
-  const ghVal=document.getElementById('gh-token').value.trim();
-  if(ghVal) localStorage.setItem('nc_pending_gh',ghVal);
   const redirectUrl=window.location.href.split('#')[0];
   const authUrl=`https://enter.pollinations.ai/authorize?redirect_url=${encodeURIComponent(redirectUrl)}&permissions=profile,balance&models=${encodeURIComponent(BYOP_ALL_MODELS)}&expiry=30&budget=10`;
   window.location.href=authUrl;
 }
-
 function checkForBYOPKey(){
   const hash=window.location.hash.slice(1);
   if(hash){
@@ -739,74 +819,79 @@ function checkForBYOPKey(){
     if(apiKey){
       localStorage.setItem('nc_poll_key',apiKey);
       history.replaceState(null,null,window.location.pathname+window.location.search);
-      const pendingGh=localStorage.getItem('nc_pending_gh');
-      if(pendingGh){document.getElementById('gh-token').value=pendingGh;localStorage.removeItem('nc_pending_gh');}
+      S.pollinationsToken=apiKey;
       updateBYOPStatus();
-      showBYOPToast('✅ Pollinations connected! Now click Connect →');
-      return;
+      showBYOPToast('✅ Pollinations connected! Click "Start Writing →" to continue');
+      return true;
     }
   }
   updateBYOPStatus();
+  return false;
 }
-
 function updateBYOPStatus(){
   const key=localStorage.getItem('nc_poll_key');
-  const bar=document.getElementById('byopStatusBar');
-  const txt=document.getElementById('byopStatusText');
-  const btn=document.getElementById('byopConnectBtn');
-  if(!bar)return;
-  if(key){
-    bar.classList.remove('hidden');
-    const masked=key.substring(0,6)+'···'+key.slice(-4);
-    txt.innerHTML=`✅ Connected &nbsp;<code style="background:rgba(76,184,160,.15);padding:2px 7px;border-radius:3px;font-size:10px">${masked}</code>`;
-    btn.textContent='🔗 Reconnect';
-  }else{
-    bar.classList.add('hidden');
-    btn.textContent='🔗 Connect with Pollinations';
-  }
+  // Update both login screen and settings modal status bars
+  ['byopStatusBar','byopStatusBar2'].forEach((barId,i)=>{
+    const bar=document.getElementById(barId);
+    const txt=document.getElementById(i===0?'byopStatusText':'byopStatusText2');
+    const btn=document.getElementById(i===0?'byopConnectBtn':'byopConnectBtn2');
+    if(!bar)return;
+    if(key){
+      bar.classList.remove('hidden');
+      const masked=key.substring(0,6)+'···'+key.slice(-4);
+      txt.innerHTML=`✅ Connected &nbsp;<code style="background:rgba(76,184,160,.15);padding:2px 7px;border-radius:3px;font-size:10px">${masked}</code>`;
+      btn.textContent='🔗 Reconnect';
+    }else{
+      bar.classList.add('hidden');
+      btn.textContent='🔗 Connect with Pollinations';
+    }
+  });
 }
-
 function disconnectBYOP(){
-  if(!confirm('Disconnect Pollinations? You\'ll need to reconnect for AI features.'))return;
+  if(!confirm('Disconnect Pollinations? AI features will stop working until you reconnect.'))return;
   localStorage.removeItem('nc_poll_key');
+  S.pollinationsToken=null;
   document.getElementById('pollinations-token').value='';
   updateBYOPStatus();
+  showToast('Pollinations disconnected');
 }
-
 function showBYOPToast(msg){
   const t=document.createElement('div');
   t.style.cssText='position:fixed;top:22px;right:22px;z-index:9999;padding:12px 20px;background:var(--surface);border:1px solid var(--teal);border-left:3px solid var(--teal);color:var(--teal);font-size:14px;animation:fadeUp .3s ease;font-family:Crimson Pro,serif';
   t.textContent=msg;document.body.appendChild(t);
-  setTimeout(()=>t.remove(),4000);
+  setTimeout(()=>t.remove(),5000);
 }
-function showError(msg){const el=document.getElementById('login-error');el.textContent=msg;el.style.display='block';}
 
 // ═══════════════════════════════════════════════════
 // LIBRARY
 // ═══════════════════════════════════════════════════
-async function loadNovels(){
+function loadNovels(){
   const grid=document.getElementById('novels-grid');
   grid.innerHTML='<div class="empty-state"><span><div class="spinner" style="width:40px;height:40px;border-width:3px;margin:auto"></div></span><p style="margin-top:14px">Loading library...</p></div>';
-  const dirs=await ghListDir('novels');
-  const folders=dirs.filter(d=>d.type==='dir');
-  const results=await Promise.all(folders.map(async f=>{
-    const file=await ghGetFile(`novels/${f.name}/data.json`);
-    if(!file)return null;
-    const n=file.content;
+  const ids=getNovelIds();
+  const results=ids.map(id=>{
+    const n=getNovelData(id);
+    if(!n)return null;
     const wc=(n.chapters||[]).reduce((a,c)=>a+stripHtml(c.content||'').trim().split(/\s+/).filter(Boolean).length,0);
-    return{id:f.name,title:n.title||'Untitled',author:n.author||'',genre:n.genre||'Fiction',modified:n.modified||n.created||'',wordCount:wc,chapterCount:(n.chapters||[]).length};
-  }));
-  S.novels=results.filter(Boolean).sort((a,b)=>b.modified.localeCompare(a.modified));
+    return{id,title:n.title||'Untitled',author:n.author||'',genre:n.genre||'Fiction',modified:n.modified||n.created||'',wordCount:wc,chapterCount:(n.chapters||[]).length};
+  }).filter(Boolean).sort((a,b)=>b.modified.localeCompare(a.modified));
+  S.novels=results;
   renderGrid();
 }
 function renderGrid(){
   const grid=document.getElementById('novels-grid');
   const sub=document.getElementById('library-subtitle');
-  if(!S.novels.length){grid.innerHTML='<div class="empty-state"><span class="emoji">📚</span><h3>No novels yet</h3><p>Click "+ New Novel" to begin your story</p></div>';sub.textContent='No novels';return;}
-  sub.textContent=`${S.novels.length} novel${S.novels.length>1?'s':''} · saved in your private GitHub repo`;
+  if(!S.novels.length){
+    grid.innerHTML='<div class="empty-state"><span class="emoji">📚</span><h3>No novels yet</h3><p>Click "+ New Novel" to begin your story, or import a .txt file</p></div>';
+    sub.textContent='No novels yet';return;
+  }
+  sub.textContent=`${S.novels.length} novel${S.novels.length>1?'s':''} · saved locally on this device`;
   grid.innerHTML=S.novels.map(n=>`
     <div class="novel-card" onclick="openNovel('${n.id}')">
-      <div class="card-actions"><button class="card-btn del" onclick="event.stopPropagation();deleteNovel('${n.id}')" title="Delete">🗑</button></div>
+      <div class="card-actions">
+        <button class="card-btn dl" onclick="event.stopPropagation();downloadNovelById('${n.id}')" title="Download as .txt">📥</button>
+        <button class="card-btn del" onclick="event.stopPropagation();deleteNovel('${n.id}')" title="Delete">🗑</button>
+      </div>
       <div class="novel-card-genre">${escHtml(n.genre)}</div>
       <div class="novel-card-title" style="margin-top:9px">${escHtml(n.title)}</div>
       <div class="novel-card-author">${n.author?'by '+escHtml(n.author):'Author not set'}</div>
@@ -814,32 +899,39 @@ function renderGrid(){
       <div style="font-size:11px;color:var(--text-faint)">${n.modified?'Modified '+fmtDate(n.modified):''}</div>
     </div>`).join('');
 }
-function openModal(){document.getElementById('new-title').value='';document.getElementById('new-author').value=S.user?.name||'';document.getElementById('modal-new').classList.add('open');setTimeout(()=>document.getElementById('new-title').focus(),100);}
+function openModal(){document.getElementById('new-title').value='';document.getElementById('new-author').value='';document.getElementById('modal-new').classList.add('open');setTimeout(()=>document.getElementById('new-title').focus(),100);}
 function closeModal(){document.getElementById('modal-new').classList.remove('open');}
-async function createNovel(){
+
+function createNovel(){
   const title=document.getElementById('new-title').value.trim()||'Untitled Novel';
   const author=document.getElementById('new-author').value.trim();
   const genre=document.getElementById('new-genre').value;
   const id='novel_'+Date.now();
   const novel={id,title,author,genre,synopsis:'',worldNotes:'',chapters:[{title:'Chapter 1',content:''}],characters:[],created:new Date().toISOString(),modified:new Date().toISOString()};
-  closeModal();showToast('Creating novel...');
-  const r=await ghPutFile(`novels/${id}/data.json`,novel,null,`Create: ${title}`);
-  if(r.ok){showToast('Novel created! ✨','success');await loadNovel(id,novel);}
-  else showToast('Failed to create novel','error');
+  closeModal();
+  const ids=getNovelIds();
+  ids.push(id);
+  saveNovelIds(ids);
+  setNovelData(id,novel);
+  showToast('Novel created! ✨','success');
+  loadNovel(id,novel);
 }
-async function deleteNovel(id){
-  if(!confirm('Delete this novel permanently?'))return;
-  const file=await ghGetFile(`novels/${id}/data.json`);
-  if(file){await ghDeleteFile(`novels/${id}/data.json`,file.sha);showToast('Novel deleted','success');await loadNovels();}
+
+function deleteNovel(id){
+  if(!confirm('Delete this novel permanently? This cannot be undone.'))return;
+  removeNovelData(id);
+  showToast('Novel deleted','success');
+  loadNovels();
 }
-async function openNovel(id){
-  showToast('Loading...');
-  const file=await ghGetFile(`novels/${id}/data.json`);
-  if(!file){showToast('Failed to load','error');return;}
-  await loadNovel(id,file.content,file.sha);
+
+function openNovel(id){
+  const novel=getNovelData(id);
+  if(!novel){showToast('Failed to load novel','error');return;}
+  loadNovel(id,novel);
 }
-async function loadNovel(id,novel,sha){
-  S.novel={...novel,id};S.novelSha=sha||null;S.chIdx=novel.chapters?.length?0:null;S.charIdx=null;
+
+function loadNovel(id,novel){
+  S.novel={...novel,id};S.chIdx=novel.chapters?.length?0:null;S.charIdx=null;
   document.getElementById('ed-novel-title').textContent=novel.title;
   document.getElementById('ed-novel-meta').textContent=`${novel.genre} · ${novel.author||'Unknown author'}`;
   document.getElementById('ed-title').value=novel.title;
@@ -856,28 +948,64 @@ async function loadNovel(id,novel,sha){
   setSaveStatus('saved','All saved ✓');
 }
 
+// ── IMPORT .TXT file ──
+function importNovelFile(){
+  const input=document.createElement('input');
+  input.type='file';
+  input.accept='.txt,.json';
+  input.onchange=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    try{
+      const text=await file.text();
+      const novel=JSON.parse(text);
+      if(!novel.title)throw new Error('Invalid file — no title found');
+      if(!novel.id)novel.id='novel_'+Date.now();
+      // If same ID exists, ask to overwrite or create new
+      const existingIds=getNovelIds();
+      if(existingIds.includes(novel.id)){
+        const overwrite=confirm(`A novel with the same ID already exists.\n\nOverwrite "${novel.title}"?\n\nClick Cancel to import as a new copy.`);
+        if(!overwrite)novel.id='novel_'+Date.now();
+      }
+      const ids=getNovelIds();
+      if(!ids.includes(novel.id)){ids.push(novel.id);saveNovelIds(ids);}
+      setNovelData(novel.id,novel);
+      loadNovels();
+      showToast('Imported: '+novel.title+' ✓','success');
+    }catch(e){showToast('Import failed: '+e.message,'error');}
+  };
+  input.click();
+}
+
+// ── DOWNLOAD novel as .txt (JSON data for backup/transfer) ──
+function downloadNovelFile(){
+  if(!S.novel)return;
+  saveCurrentChapter();
+  S.novel.synopsis=document.getElementById('synopsis-text').value;
+  S.novel.worldNotes=document.getElementById('world-notes').value;
+  const data=JSON.stringify(S.novel,null,2);
+  dlBlob(new Blob([data],{type:'text/plain'}),safeName(S.novel.title)+'_novelcraft.txt');
+  showToast('Downloaded: '+S.novel.title+' ✓','success');
+}
+function downloadNovelById(id){
+  const novel=getNovelData(id);if(!novel)return;
+  const data=JSON.stringify(novel,null,2);
+  dlBlob(new Blob([data],{type:'text/plain'}),safeName(novel.title||'novel')+'_novelcraft.txt');
+  showToast('Downloaded ✓','success');
+}
+
 // ═══════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════
 function switchSection(section){
-  S.currentSection = section;
-  // Update sidebar nav active states
+  S.currentSection=section;
   document.querySelectorAll('.topbar-nav-item').forEach(el=>el.classList.remove('active'));
-  const navEl = document.getElementById('nav-'+section);
-  if(navEl) navEl.classList.add('active');
-  // Show correct pane
+  const navEl=document.getElementById('nav-'+section);
+  if(navEl)navEl.classList.add('active');
   const panes=['write','ai','cover','characters','notes'];
-  panes.forEach(p=>{
-    document.getElementById('tab-'+p).classList.toggle('active', p===section);
-  });
+  panes.forEach(p=>{document.getElementById('tab-'+p).classList.toggle('active',p===section);});
 }
-
 function selectChapterAndWrite(idx){
-  saveCurrentChapter();
-  S.chIdx=idx;
-  loadChapter(idx);
-  renderChapterList();
-  switchSection('write');
+  saveCurrentChapter();S.chIdx=idx;loadChapter(idx);renderChapterList();switchSection('write');
 }
 
 // ═══════════════════════════════════════════════════
@@ -922,6 +1050,7 @@ function updateChWc(){
   const wc=t?t.split(/\s+/).filter(Boolean).length:0;
   document.getElementById('ch-wordcount').textContent=wc.toLocaleString()+' words';
 }
+
 // ── FORMAT TOOLBAR ──
 function fmtExec(cmd){document.execCommand(cmd,false,null);document.getElementById('main-editor').focus();updateFmtState();}
 function updateFmtState(){
@@ -999,31 +1128,41 @@ function onChDragEnd(e){
 function updateNovelMeta(){if(!S.novel)return;S.novel.title=document.getElementById('ed-title').value;S.novel.author=document.getElementById('ed-author').value;S.novel.genre=document.getElementById('ed-genre').value;document.getElementById('ed-novel-title').textContent=S.novel.title;document.getElementById('ed-novel-meta').textContent=`${S.novel.genre} · ${S.novel.author||'Unknown author'}`;scheduleSave();}
 
 // ═══════════════════════════════════════════════════
-// SAVE
+// SAVE — local only
 // ═══════════════════════════════════════════════════
-function scheduleSave(){setSaveStatus('saving','● Saving...');clearTimeout(S.saveTimer);S.saveTimer=setTimeout(saveToGitHub,2500);}
-async function saveNowManual(){clearTimeout(S.saveTimer);await saveToGitHub();showToast('Saved to GitHub ✓','success');}
-async function saveToGitHub(){
-  if(!S.novel||!S.repoOwner)return;
+function scheduleSave(){setSaveStatus('saving','● Saving...');clearTimeout(S.saveTimer);S.saveTimer=setTimeout(saveToLocal,2000);}
+
+function saveNowManual(){
+  clearTimeout(S.saveTimer);
+  saveToLocal();
+  showToast('Saved locally ✓','success');
+}
+
+function saveToLocal(){
+  if(!S.novel)return;
   saveCurrentChapter();
   S.novel.synopsis=document.getElementById('synopsis-text').value;
   S.novel.worldNotes=document.getElementById('world-notes').value;
   S.novel.modified=new Date().toISOString();
-  setSaveStatus('saving','☁ Syncing...');updateStats();
+  setSaveStatus('saving','💾 Saving...');
+  updateStats();
   try{
-    const r=await ghPutFile(`novels/${S.novel.id}/data.json`,S.novel,S.novelSha,`Update: ${S.novel.title}`);
-    if(r.ok){S.novelSha=r.data.content.sha;setSaveStatus('saved','Saved to GitHub ✓');}
+    // Ensure this novel's ID is in the list
+    const ids=getNovelIds();
+    if(!ids.includes(S.novel.id)){ids.push(S.novel.id);saveNovelIds(ids);}
+    const ok=setNovelData(S.novel.id,S.novel);
+    if(ok)setSaveStatus('saved','Saved locally ✓');
     else setSaveStatus('error','⚠ Save failed');
-  }catch(e){setSaveStatus('error','⚠ No connection');}
+  }catch(e){setSaveStatus('error','⚠ Storage error');}
 }
+
 function setSaveStatus(type,msg){const el=document.getElementById('save-status');el.className='save-status '+type;el.textContent=msg;}
-function backToList(){clearTimeout(S.saveTimer);saveToGitHub().then(()=>{showScreen('screen-list');loadNovels();});}
+function backToList(){clearTimeout(S.saveTimer);saveToLocal();showScreen('screen-list');loadNovels();}
 
 // ═══════════════════════════════════════════════════
-// EXPORT — Fixed closeExportModal + error handling
+// EXPORT — unchanged from original
 // ═══════════════════════════════════════════════════
-let _exportFormat = 'txt';
-
+let _exportFormat='txt';
 function openExportModal(){
   if(!S.novel)return;
   selectFormat('txt');
@@ -1031,11 +1170,7 @@ function openExportModal(){
   if(noteEl)noteEl.style.display=S.novel.coverImageData?'block':'none';
   document.getElementById('modal-export').classList.add('open');
 }
-
-function closeExportModal(){
-  document.getElementById('modal-export').classList.remove('open');
-}
-
+function closeExportModal(){document.getElementById('modal-export').classList.remove('open');}
 function selectFormat(fmt){
   _exportFormat=fmt;
   ['txt','epub','pdf'].forEach(f=>{document.getElementById('pill-'+f).classList.toggle('selected',f===fmt);});
@@ -1045,16 +1180,15 @@ function selectFormat(fmt){
   else if(fmt==='epub'){epubPdfOpts.style.display='block';note.textContent='📚 EPUB — standard format for Kindle, Kobo, Apple Books, and all e-readers.';}
   else{epubPdfOpts.style.display='block';note.textContent='🖨️ PDF — fixed layout, perfect for printing or sharing.';}
 }
-
 async function doExport(){
   if(!S.novel)return;
   saveCurrentChapter();
   const btn=document.getElementById('export-go-btn');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Exporting...';
   const opts={
-    cover:   document.getElementById('exp-cover')?.checked ?? true,
-    toc:     document.getElementById('exp-toc')?.checked ?? true,
-    synopsis:document.getElementById('exp-synopsis')?.checked ?? false,
+    cover:   document.getElementById('exp-cover')?.checked??true,
+    toc:     document.getElementById('exp-toc')?.checked??true,
+    synopsis:document.getElementById('exp-synopsis')?.checked??false,
     coverArt:false,
   };
   try{
@@ -1099,7 +1233,6 @@ async function exportEpub(opts){
     if(hasCoverImg)body=`<img src="cover.jpg" alt="Cover"/>`;
     body+=`<h1>${xEsc(n.title)}</h1>`;
     if(n.author)body+=`<p class="no-indent" style="font-size:1.1em;color:#555;margin-top:0.5em">by ${xEsc(n.author)}</p>`;
-    if(n.genre)body+=``;
     zip.file('OEBPS/cover.xhtml',xhtml('Cover',`<div class="cover-page">${body}</div>`));
     manifest.push({id:'cover',href:'cover.xhtml',type:'application/xhtml+xml'});spine.push('cover');
   }
@@ -1122,11 +1255,8 @@ async function exportEpub(opts){
       manifest.push({id:imgId,href:`${imgId}.jpg`,type:'image/jpeg'});
     });
     const rawContent=ch.content||'';
-    // rawContent is now HTML from contenteditable — parse it into EPUB-safe XHTML
     const tmp=document.createElement('div');tmp.innerHTML=rawContent;
     let bodyParts='';
-    // Walk top-level children (p, img, br, etc)
-    const nodes=tmp.childNodes.length?tmp.childNodes:[tmp];
     (tmp.childNodes.length?Array.from(tmp.childNodes):[tmp]).forEach(node=>{
       if(node.nodeType===Node.ELEMENT_NODE&&node.tagName==='IMG'){
         const imgId=node.getAttribute('data-imgid');
@@ -1138,11 +1268,7 @@ async function exportEpub(opts){
         bodyParts+=`<p>${xEsc(node.textContent)}</p>`;
       }
     });
-    if(!bodyParts){
-      // Fallback: plain text extraction
-      const plain=stripHtml(rawContent);
-      plain.split(/\n{2,}/).forEach(para=>{if(para.trim())bodyParts+=`<p>${xEsc(para.trim())}</p>`;});
-    }
+    if(!bodyParts){const plain=stripHtml(rawContent);plain.split(/\n{2,}/).forEach(para=>{if(para.trim())bodyParts+=`<p>${xEsc(para.trim())}</p>`;});}
     if(!bodyParts)bodyParts='<p>&#160;</p>';
     const body=`<div class="chapter-break"><p class="chapter-num">Chapter ${i+1}</p><h2>${xEsc(ch.title||`Chapter ${i+1}`)}</h2>${bodyParts}</div>`;
     zip.file(`OEBPS/${id}.xhtml`,xhtml(ch.title||`Chapter ${i+1}`,body));
@@ -1222,7 +1348,6 @@ async function exportPdf(opts){
     if(i>0){addPageNum();newPage(false);pageNum++;}
     subheading(`Chapter ${i+1}`);heading(ch.title||`Chapter ${i+1}`,18);divider();y+=2;
     const chImages=ch.images||{};
-    // Extract inline images from HTML and convert to plain text paragraphs
     const tmpDiv=document.createElement('div');tmpDiv.innerHTML=ch.content||'';
     const contentNodes=Array.from(tmpDiv.childNodes);
     if(!contentNodes.length||!stripHtml(ch.content||'').trim()){para('[No content yet]');}
@@ -1265,15 +1390,22 @@ function saveCharacter(){if(S.charIdx===null)return;S.novel.characters[S.charIdx
 function deleteCharacter(){if(S.charIdx===null)return;if(!confirm('Delete?'))return;S.novel.characters.splice(S.charIdx,1);S.charIdx=null;document.getElementById('char-name').value='';document.getElementById('char-desc').value='';renderCharList();updateStats();scheduleSave();}
 async function aiCreateChar(){
   const ctx=getCtx();
-  const result=await callAI(`Create a complex, memorable character for a ${ctx.genre} novel called "${ctx.title}". Synopsis: ${ctx.synopsis}.\n\nInclude:\n- Name\n- Role (Protagonist/Antagonist/Supporting)\n- Physical appearance\n- Personality (strengths & flaws)\n- Background & backstory\n- Motivations and goals`);
-  if(!result)return;
+  setEdAI(true,'📚 Loading novel context…');
+  const novelCtx=await buildNovelContext('meta',msg=>setEdAI(true,msg));
+  setEdAI(true,'🎭 Creating character…');
+  const result=await callAI(
+    `Create a complex, memorable NEW character that fits naturally into this story. They should fill a narrative gap, have believable connections to existing characters and events, and be distinct from the cast already introduced.\n\nInclude: Name, Role, Physical appearance, Personality (strengths & flaws), Background & backstory, Motivations and goals, How they connect to the existing story.`,
+    'You are a professional literary character designer. Use the full novel context to create a character that fits seamlessly. Return character details in plain prose.',
+    novelCtx
+  );
+  if(!result){setEdAI(false);return;}
   let name='AI Character';
   for(const line of result.split('\n').slice(0,6)){if(line.toLowerCase().includes('name')){name=line.split(':').pop().trim().replace(/[*_#]/g,'').slice(0,40);break;}}
   if(!S.novel.characters)S.novel.characters=[];
   S.novel.characters.push({name,role:'Supporting',description:result});
   S.charIdx=S.novel.characters.length-1;
   renderCharList();selectChar(S.charIdx);updateStats();scheduleSave();
-  switchSection('characters');showToast('Character created! ✨','success');
+  setEdAI(false);switchSection('characters');showToast('Character created! ✨','success');
 }
 
 // ═══════════════════════════════════════════════════
@@ -1311,7 +1443,6 @@ async function generateCover(){
   const desc=document.getElementById('cover-desc').value.trim();
   const prompt=`book cover art, "${S.novel?.title||'Novel'}", ${style} style, ${S.novel?.genre||'Fiction'}, ${desc}, dramatic lighting, cinematic, professional publishing`;
   const p=encodeURIComponent(prompt);
-  // gptimage model — uses Pollinations image API with BYOP key
   const url=`${IMG_API}${p}?width=480&height=720&model=gptimage&nologo=true&seed=${Date.now()}`;
   document.getElementById('cover-status').textContent='⏳ Generating AI cover with GPT Image... (20–40 seconds)';
   document.getElementById('cover-preview').innerHTML='<div class="cover-placeholder"><span><div class="spinner" style="width:50px;height:50px;border-width:3px;margin:auto"></div></span><p style="margin-top:14px">Generating...</p></div>';
@@ -1359,15 +1490,12 @@ function removeChapterImage(id){
   if(!ch.images?.[id])return;
   delete ch.images[id];
   const editor=document.getElementById('main-editor');
-  // Remove the img element with that data-imgid from the contenteditable
   editor.querySelectorAll(`img[data-imgid="${id}"]`).forEach(el=>el.remove());
-  // Also strip any text-based {{IMG:id}} markers left in the HTML
   editor.innerHTML=editor.innerHTML.replace(new RegExp(`\\n?\\{\\{IMG:${id}\\}\\}\\n?`,'g'),'');
   renderImgStrip();scheduleSave();showToast('Image removed','success');
 }
 function insertImgMarker(id){
   const editor=document.getElementById('main-editor');editor.focus();
-  // Insert the image inline at cursor position
   const ch=S.novel.chapters[S.chIdx];
   const imgData=ch?.images?.[id]?.data;
   if(imgData){
@@ -1392,8 +1520,12 @@ function compressImage(file,maxW,maxH,quality){
 // ═══════════════════════════════════════════════════
 // AI HELPERS
 // ═══════════════════════════════════════════════════
+
+// Context thresholds
+const FULL_NOVEL_CHAR_LIMIT = 18000; // send all chapters in full if under this
+const RECENT_CHAPTERS_FULL  = 2;     // always send last N chapters in full for 'write' mode
+
 function getCtx(){return{title:S.novel?.title||'Untitled',genre:S.novel?.genre||'Fiction',synopsis:S.novel?.synopsis||'Not defined',chars:(S.novel?.characters||[]).map(c=>c.name).join(', ')||'None'};}
-// ── MODEL SYNC — keeps all section dropdowns in sync ──
 function syncModel(val){
   S.aiModel=val;
   ['ai-model','write-model','char-model','notes-model'].forEach(id=>{
@@ -1402,9 +1534,128 @@ function syncModel(val){
   });
 }
 
-async function callAI(prompt,sys){
+// ── Strip HTML tags to plain text ──
+function stripHtml(html){const d=document.createElement('div');d.innerHTML=html||'';return d.innerText||d.textContent||'';}
+
+// ── Fingerprint chapter content for cache invalidation ──
+function chapterFingerprint(ch){const t=stripHtml(ch.content||'');return t.length+'|'+t.slice(0,40)+t.slice(-40);}
+
+// ── Low-level AI call using SUMMARY_MODEL (no toast on fail, used internally) ──
+async function callAIRaw(prompt,sys){
+  if(!S.pollinationsToken)return null;
+  try{
+    const res=await fetch(`${GEN_API}/v1/chat/completions`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.pollinationsToken},
+      body:JSON.stringify({
+        model:SUMMARY_MODEL,
+        messages:[
+          {role:'system',content:sys||'You are a helpful assistant. Be concise.'},
+          {role:'user',content:prompt}
+        ]
+      })
+    });
+    if(!res.ok)return null;
+    const data=await res.json();
+    return data?.choices?.[0]?.message?.content?.trim()||null;
+  }catch(e){return null;}
+}
+
+// ── Get or generate a chapter summary (cached per session, keyed by content fingerprint) ──
+async function getChapterSummary(idx,ch,statusCb){
+  const key=idx+'_'+chapterFingerprint(ch);
+  if(S.chSummaryCache[key])return S.chSummaryCache[key];
+  const text=stripHtml(ch.content||'').trim();
+  if(!text)return`[Chapter ${idx+1} — no content yet]`;
+  if(statusCb)statusCb(`📚 Summarising Ch.${idx+1} (${SUMMARY_MODEL})…`);
+  const summary=await callAIRaw(
+    `Summarise this chapter in 3-4 sentences. Cover: key events, what characters do, emotional beats, any plot revelations. Be specific — names, actions, outcomes.\n\nCHAPTER ${idx+1}: ${ch.title||''}\n\n${text.slice(0,4000)}`,
+    'You are a precise literary summariser. Return ONLY a concise paragraph summary — no labels, no preamble.'
+  );
+  const result=summary||`Chapter ${idx+1} (${ch.title||'Untitled'}): [summary unavailable]`;
+  S.chSummaryCache[key]=result;
+  return result;
+}
+
+// ── Build full novel context for any AI call ──
+// mode: 'write' (continuation/improve) | 'studio' (AI tools) | 'meta' (synopsis/chars)
+async function buildNovelContext(mode,statusCb){
+  const n=S.novel;
+  if(!n)return'';
+  const chapters=n.chapters||[];
+  const currentIdx=(S.chIdx!==null)?S.chIdx:chapters.length-1;
+
+  // Flush current editor into chapter object before reading content
+  if(S.chIdx!==null&&n.chapters?.[S.chIdx]){
+    const ed=document.getElementById('main-editor');
+    if(ed)n.chapters[S.chIdx].content=ed.innerHTML;
+  }
+
+  let ctx=`=== NOVEL CONTEXT ===\n`;
+  ctx+=`Title: "${n.title||'Untitled'}" | Author: ${n.author||'Unknown'} | Genre: ${n.genre||'Fiction'}\n`;
+  if(n.synopsis)ctx+=`\nSynopsis:\n${n.synopsis.slice(0,600)}\n`;
+  if(n.characters?.length){
+    ctx+=`\nCharacters:\n`;
+    n.characters.forEach(c=>{ctx+=`• ${c.name} (${c.role})${c.description?': '+c.description.slice(0,160):''}\n`;});
+  }
+  if(n.worldNotes)ctx+=`\nWorld & Notes:\n${n.worldNotes.slice(0,400)}\n`;
+
+  const chapsWithContent=chapters.filter(c=>stripHtml(c.content||'').trim().length>0);
+  if(!chapsWithContent.length)return ctx;
+
+  const totalChars=chapsWithContent.reduce((a,c)=>a+stripHtml(c.content||'').length,0);
+  ctx+=`\n=== STORY CONTENT (${chapters.length} chapter${chapters.length!==1?'s':''}) ===\n`;
+
+  if(totalChars<=FULL_NOVEL_CHAR_LIMIT){
+    // Small novel — send everything in full
+    if(statusCb)statusCb('📖 Loading full novel…');
+    chapters.forEach((ch,i)=>{
+      const text=stripHtml(ch.content||'').trim();
+      if(text)ctx+=`\n— Chapter ${i+1}: ${ch.title||'Untitled'} —\n${text}\n`;
+    });
+    ctx+=`\n[All ${chapsWithContent.length} chapters included in full]\n`;
+  } else {
+    // Large novel — summaries for older chapters, full text for recent ones
+    if(statusCb)statusCb('📚 Building story context…');
+    const fullTextFrom=mode==='write'
+      ? Math.max(0, currentIdx - RECENT_CHAPTERS_FULL + 1)
+      : currentIdx;
+
+    // Generate all needed summaries in parallel
+    const summaryJobs=chapters.map((ch,i)=>{
+      if(i<fullTextFrom&&stripHtml(ch.content||'').trim()){
+        return getChapterSummary(i,ch,statusCb);
+      }
+      return Promise.resolve(null);
+    });
+    const summaries=await Promise.all(summaryJobs);
+
+    for(let i=0;i<chapters.length;i++){
+      const ch=chapters[i];
+      const text=stripHtml(ch.content||'').trim();
+      if(!text)continue;
+      if(i<fullTextFrom){
+        ctx+=`\n— Chapter ${i+1}: ${ch.title||'Untitled'} [SUMMARY] —\n${summaries[i]}\n`;
+      } else {
+        const label=(i===currentIdx)?'[CURRENT — WRITING HERE]':'[FULL TEXT]';
+        ctx+=`\n— Chapter ${i+1}: ${ch.title||'Untitled'} ${label} —\n${text}\n`;
+      }
+    }
+    const nSumm=chapsWithContent.filter((_,i)=>i<fullTextFrom).length;
+    const nFull=chapsWithContent.filter((_,i)=>i>=fullTextFrom).length;
+    ctx+=`\n[${nSumm} chapter(s) summarised via ${SUMMARY_MODEL} · ${nFull} chapter(s) in full]\n`;
+  }
+  return ctx;
+}
+
+// ── Main AI call — injects full novel context ──
+async function callAI(prompt,sys,novelContext){
   const model=S.aiModel||'openai';
-  if(!S.pollinationsToken){showToast('No Pollinations API key — please sign out and reconnect','error');return null;}
+  if(!S.pollinationsToken){
+    showToast('No AI key — click ⚙️ AI Setup to connect Pollinations','error');
+    return null;
+  }
+  const fullPrompt=novelContext?`${novelContext}\n\n${'='.repeat(40)}\nTASK:\n${prompt}`:prompt;
   try{
     const res=await fetch(`${GEN_API}/v1/chat/completions`,{
       method:'POST',
@@ -1413,7 +1664,7 @@ async function callAI(prompt,sys){
         model,
         messages:[
           {role:'system',content:sys||'You are a talented creative writing assistant. Write with vivid detail, strong voice, and narrative craft. Respond with ONLY the requested creative content — no preamble, no meta-commentary.'},
-          {role:'user',content:prompt}
+          {role:'user',content:fullPrompt}
         ]
       })
     });
@@ -1423,26 +1674,17 @@ async function callAI(prompt,sys){
   }catch(e){showToast('AI error: '+e.message,'error');}
   return null;
 }
-// ── MARKDOWN → HTML converter for AI output ──
+
 function mdToHtml(text){
-  // Escape HTML entities first on raw text
-  let h=text
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-  // **bold**
+  let h=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
-  // *italic* or _italic_
   h=h.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
   h=h.replace(/_([^_\n]+)_/g,'<em>$1</em>');
-  // Straight double quotes → smart curly quotes (only if not already curly)
   h=h.replace(/"([^"]+)"/g,'\u201C$1\u201D');
-  // Wrap paragraphs: split on double newline, wrap each in <p>
   const paras=h.split(/\n{2,}/);
   return paras.map(p=>p.trim()?'<p>'+p.replace(/\n/g,'<br>')+'</p>':'').filter(Boolean).join('\n');
 }
 
-// Master system prompt enforcing formatting habits
 const WRITING_SYSTEM=`You are a professional literary fiction author and writing assistant.
 FORMATTING RULES — always follow these without exception:
 1. All dialogue must use proper curly/smart quotes: \u201Clike this\u201D — never straight quotes "like this"
@@ -1451,6 +1693,7 @@ FORMATTING RULES — always follow these without exception:
 4. Never use markdown headers (##) or bullet points in fiction prose
 5. Paragraphs are separated by blank lines
 6. Start dialogue on a new paragraph for each new speaker
+You have been given the FULL novel context. Use it to maintain perfect continuity of characters, plot, tone, and world details.
 Respond with ONLY the requested story content — no preamble, no commentary.`;
 
 async function aiContinue(){
@@ -1458,9 +1701,14 @@ async function aiContinue(){
   const ed=document.getElementById('main-editor');
   const text=(ed.innerText||'').trim();
   if(!text){showToast('Write something first!');return;}
-  const ctx=getCtx();
-  setEdAI(true,'⏳ Writing continuation...');
-  const r=await callAI(`Continue this ${ctx.genre} story seamlessly from where it ends. Match the exact style, voice, and pacing. Write 3-4 paragraphs. Remember: use *italics* for thoughts, **bold** for pivotal moments, and \u201Ccurly quotes\u201D for all dialogue.\n\nSTORY SO FAR (last section):\n${text.slice(-800)}`,WRITING_SYSTEM);
+  setEdAI(true,'📚 Building story context…');
+  const novelCtx=await buildNovelContext('write',msg=>setEdAI(true,msg));
+  setEdAI(true,'✍️ Writing continuation…');
+  const chTitle=S.novel?.chapters?.[S.chIdx]?.title||`Chapter ${(S.chIdx||0)+1}`;
+  const r=await callAI(
+    `Continue the story in chapter "${chTitle}" seamlessly from where it ends. Match the exact style, voice, and pacing. Write 3-4 paragraphs.\n\nMaintain full continuity with ALL previous chapters in the context above — same characters, world rules, tone, unresolved threads.\n\nFormatting: *italics* for thoughts, **bold** for pivotal moments, \u201Ccurly quotes\u201D for all dialogue.`,
+    WRITING_SYSTEM, novelCtx
+  );
   setEdAI(false);
   if(r){ed.innerHTML+='<p><br></p>'+mdToHtml(r);updateChWc();scheduleSave();ed.scrollTop=ed.scrollHeight;}
 }
@@ -1468,25 +1716,45 @@ async function aiImprove(){
   if(S.aiBusy)return;
   const text=(document.getElementById('main-editor').innerText||'').trim();
   if(!text){showToast('Write something first!');return;}
-  setEdAI(true,'✨ Improving...');
-  const r=await callAI(`Rewrite this passage with elevated prose — richer imagery, stronger verbs, deeper sensory detail, better rhythm. Keep the same plot events and characters. Apply formatting: *italics* for thoughts/emphasis, \u201Ccurly quotes\u201D for all dialogue, **bold** only for truly pivotal moments.\n\n${text.slice(-800)}`,WRITING_SYSTEM);
+  setEdAI(true,'📚 Building story context…');
+  const novelCtx=await buildNovelContext('write',msg=>setEdAI(true,msg));
+  setEdAI(true,'✨ Improving writing…');
+  const r=await callAI(
+    `Rewrite this passage with elevated prose — richer imagery, stronger verbs, deeper sensory detail, better rhythm. Keep the same plot events and stay consistent with the characters and world in the context above.\n\nFormatting: *italics* for thoughts/emphasis, \u201Ccurly quotes\u201D for dialogue, **bold** only for truly pivotal moments.\n\nPASSAGE:\n${text.slice(-1200)}`,
+    WRITING_SYSTEM, novelCtx
+  );
   setEdAI(false);if(r)showReviewPopup(r);
 }
 async function aiRewrite(){
   if(S.aiBusy)return;
   const sel=window.getSelection().toString().trim();
   if(!sel){showToast('Select text to rewrite first');return;}
-  setEdAI(true,'🔁 Rewriting selection...');
-  const r=await callAI(`Rewrite this selected passage with more vivid description, stronger impact, and better flow. Keep the same meaning. Use *italics* for thoughts, \u201Ccurly quotes\u201D for dialogue.\n\n${sel}`,WRITING_SYSTEM);
+  setEdAI(true,'📚 Loading context…');
+  const novelCtx=await buildNovelContext('write',msg=>setEdAI(true,msg));
+  setEdAI(true,'🔁 Rewriting selection…');
+  const r=await callAI(
+    `Rewrite this passage with more vivid description, stronger impact, better flow. Keep same meaning; stay consistent with characters and world in the context above.\n\nFormatting: *italics* for thoughts, \u201Ccurly quotes\u201D for dialogue.\n\nSELECTED:\n${sel}`,
+    WRITING_SYSTEM, novelCtx
+  );
   setEdAI(false);if(r)showReviewPopup(r);
 }
 async function aiSummarize(){
   if(S.aiBusy)return;
   const text=(document.getElementById('main-editor').innerText||'').trim();
   if(!text)return;
-  setEdAI(true,'📋 Summarizing...');
-  const r=await callAI(`Summarize this chapter in 2-3 clear sentences covering the key events and emotional beats:\n\n${text.slice(0,3000)}`);
-  setEdAI(false);if(r)alert('Chapter Summary:\n\n'+r);
+  setEdAI(true,`📋 Summarising with ${SUMMARY_MODEL}…`);
+  // Invalidate cache for current chapter so we get a fresh summary
+  const ch=S.novel?.chapters?.[S.chIdx];
+  if(ch){delete S.chSummaryCache[S.chIdx+'_'+chapterFingerprint(ch)];}
+  const r=await callAIRaw(
+    `Summarise this chapter in 3-4 sentences covering key events, character actions, emotional beats, plot revelations.\n\nChapter: "${ch?.title||''}"\n\n${text.slice(0,4000)}`,
+    'Return ONLY the summary paragraph — no labels, no preamble.'
+  );
+  setEdAI(false);
+  if(r){
+    if(ch)S.chSummaryCache[S.chIdx+'_'+chapterFingerprint(ch)]=r;
+    alert('Chapter Summary:\n\n'+r);
+  }
 }
 function setEdAI(busy,msg){S.aiBusy=busy;const el=document.getElementById('editor-ai-status');el.style.display=busy?'inline':'none';el.textContent=msg||'';document.querySelectorAll('.ai-btn,.tool-btn').forEach(b=>b.disabled=busy);}
 function showReviewPopup(htmlOrText){
@@ -1520,40 +1788,58 @@ function acceptRev(btn){
 
 // ── AI STUDIO TOOLS ──
 const AI_TOOLS=[
-  {icon:'📖',text:'Chapter Outline',p:'Create a detailed chapter outline with numbered scenes for a {genre} novel "{title}". Synopsis: {synopsis}. Make each scene vivid and purposeful.'},
-  {icon:'💡',text:'Plot Twists',p:'Brainstorm 5 shocking plot twists for "{title}" ({genre}). Synopsis: {synopsis}. Each should be unexpected and change story direction dramatically.'},
-  {icon:'🌍',text:'World Building',p:'Create rich world-building for "{title}" ({genre}): geography, culture, magic/technology, political factions, history. Synopsis: {synopsis}'},
-  {icon:'💬',text:'Dialogue Scene',p:'Write a compelling, character-revealing dialogue scene for "{title}" ({genre}). Characters: {chars}. Rich subtext, distinct voices, action beats. Use \u201Ccurly quotes\u201D for all dialogue.'},
-  {icon:'😈',text:'Create Antagonist',p:'Design a compelling antagonist for "{title}" ({genre}). Name, appearance, backstory, motivation, methods, specific threat to protagonist. Synopsis: {synopsis}'},
-  {icon:'🌅',text:'Opening Hook',p:'Write 3 different opening hooks for "{title}" ({genre}): in medias res, provocative statement, atmospheric scene. Synopsis: {synopsis}'},
-  {icon:'🎭',text:'Scene Transition',p:'Write a cinematic scene transition for "{title}" bridging two locations/times while maintaining emotional momentum.'},
-  {icon:'🎬',text:'Climax Scene',p:'Write a devastating, emotionally satisfying climax scene for "{title}" ({genre}). Characters: {chars}. Synopsis: {synopsis}'},
-  {icon:'💔',text:'Emotional Moment',p:'Write a deeply emotional, character-defining moment for a character in "{title}" ({genre}). Characters: {chars}.'},
-  {icon:'🔍',text:'Story Analysis',p:'Analyze "{title}" ({genre}) and identify 5 potential plot problems with solutions.\nSynopsis: {synopsis}\nCharacters: {chars}'},
+  {icon:'📖',text:'Chapter Outline',p:'Using the full novel context above, create a detailed outline for the NEXT chapter with numbered scenes. Each scene should follow logically from where the story currently is.'},
+  {icon:'💡',text:'Plot Twists',p:'Based on the full story context, brainstorm 5 surprising but earned plot twists that would work right now in the narrative. Each should emerge naturally from existing characters and threads.'},
+  {icon:'🌍',text:'World Building',p:'Based on the story context, deepen the world-building. Expand on the geography, culture, and systems implied but not fully explored. Stay consistent with what\'s already established.'},
+  {icon:'💬',text:'Dialogue Scene',p:'Write a compelling, character-revealing dialogue scene that fits naturally at this point in the story. Use characters already introduced. Rich subtext, distinct voices. Use \u201Ccurly quotes\u201D for all dialogue.'},
+  {icon:'😈',text:'Create Antagonist',p:'Design or deepen the antagonist for this story. Use the novel context to ensure they are a meaningful threat to the protagonist and connected to the established plot.'},
+  {icon:'🌅',text:'Opening Hook',p:'Write 3 different opening hooks for the NEXT chapter that follow logically from where the story ended. Reference specific story events in each option.'},
+  {icon:'🎭',text:'Scene Transition',p:'Write a cinematic scene transition bridging the current chapter to the next, maintaining emotional momentum and continuity with events in the story.'},
+  {icon:'🎬',text:'Climax Scene',p:'Based on ALL the story context, write a devastating, emotionally satisfying climax that pays off the specific threads and character arcs established in previous chapters.'},
+  {icon:'💔',text:'Emotional Moment',p:'Write a deeply emotional, character-defining moment for one of the main characters. Ground it in their established backstory, relationships, and recent chapter events.'},
+  {icon:'🔍',text:'Story Analysis',p:'Analyse the full story so far and identify: 5 plot threads that need resolution, any continuity issues, character arcs that need development, and specific recommendations for future chapters.'},
 ];
 function renderTools(){document.getElementById('ai-tools-list').innerHTML=AI_TOOLS.map((t,i)=>`<button class="tool-btn" onclick="runTool(${i})"><span style="font-size:15px">${t.icon}</span>${t.text}</button>`).join('');}
 async function runTool(i){
   if(S.aiBusy){showToast('AI busy, please wait...');return;}
-  const ctx=getCtx();
-  const p=AI_TOOLS[i].p.replace(/{title}/g,ctx.title).replace(/{genre}/g,ctx.genre).replace(/{synopsis}/g,ctx.synopsis).replace(/{chars}/g,ctx.chars);
-  setEdAI(true);document.getElementById('ai-studio-status').textContent='⏳ Generating...';document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">✍️ Writing...</em>';
-  const r=await callAI(p,WRITING_SYSTEM);setEdAI(false);
+  setEdAI(true,'📚 Building novel context…');
+  document.getElementById('ai-studio-status').textContent='📚 Loading story context…';
+  document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">📚 Reading your novel…</em>';
+  const novelCtx=await buildNovelContext('studio',msg=>{setEdAI(true,msg);document.getElementById('ai-studio-status').textContent=msg;});
+  setEdAI(true,'✍️ Generating…');
+  document.getElementById('ai-studio-status').textContent='✍️ Writing…';
+  document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">✍️ Writing…</em>';
+  const r=await callAI(AI_TOOLS[i].p,WRITING_SYSTEM,novelCtx);
+  setEdAI(false);
   document.getElementById('ai-studio-status').textContent=r?'✅ Done!':'❌ Error';
-  document.getElementById('ai-output-area').innerHTML=r?mdToHtml(r):'<em>[Generation failed]</em>';
+  document.getElementById('ai-output-area').innerHTML=r?mdToHtml(r):'<em>[Generation failed — check ⚙️ AI Setup]</em>';
 }
 async function aiCustom(){
-  if(S.aiBusy)return;const prompt=document.getElementById('custom-prompt').value.trim();if(!prompt)return;
-  const ctx=getCtx();const full=`Novel: "${ctx.title}" | Genre: ${ctx.genre}\nSynopsis: ${ctx.synopsis}\nCharacters: ${ctx.chars}\n\n${prompt}`;
-  setEdAI(true);document.getElementById('ai-studio-status').textContent='⏳ Generating...';document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">✍️ Writing...</em>';
-  const r=await callAI(full,WRITING_SYSTEM);setEdAI(false);
+  if(S.aiBusy)return;
+  const prompt=document.getElementById('custom-prompt').value.trim();if(!prompt)return;
+  setEdAI(true,'📚 Building novel context…');
+  document.getElementById('ai-studio-status').textContent='📚 Loading story context…';
+  document.getElementById('ai-output-area').innerHTML='<em style="color:var(--text-dim)">📚 Reading your novel…</em>';
+  const novelCtx=await buildNovelContext('studio',msg=>{setEdAI(true,msg);document.getElementById('ai-studio-status').textContent=msg;});
+  setEdAI(true,'✍️ Generating…');
+  document.getElementById('ai-studio-status').textContent='✍️ Writing…';
+  const r=await callAI(prompt,WRITING_SYSTEM,novelCtx);
+  setEdAI(false);
   document.getElementById('ai-studio-status').textContent=r?'✅ Done!':'❌ Error';
   document.getElementById('ai-output-area').innerHTML=r?mdToHtml(r):'<em>[Generation failed]</em>';
 }
 async function aiSynopsis(){
-  if(S.aiBusy)return;const ctx=getCtx();const chs=(S.novel?.chapters||[]).slice(0,8).map(c=>c.title).join(', ');
-  setEdAI(true,'📋 Generating synopsis...');
-  const r=await callAI(`Write a compelling 3-paragraph back-cover synopsis for "${ctx.title}" (${ctx.genre}) by ${S.novel?.author||'Unknown'}.\nCharacters: ${ctx.chars}\nChapters: ${chs||'not defined'}\n\nMake it sound like a professional publisher wrote it.`);
-  setEdAI(false);if(r){document.getElementById('synopsis-text').value=r;S.novel.synopsis=r;scheduleSave();}
+  if(S.aiBusy)return;
+  setEdAI(true,'📚 Reading all chapters…');
+  const novelCtx=await buildNovelContext('meta',msg=>setEdAI(true,msg));
+  setEdAI(true,'📋 Writing synopsis…');
+  const r=await callAI(
+    `Write a compelling 3-paragraph back-cover synopsis for this novel. Read the FULL story content above — reference specific plot points, character journeys, and the central conflict.\n1. Hook the reader in the opening line\n2. Introduce protagonist and central conflict\n3. Hint at stakes and climax without spoiling\n\nWrite as a professional publisher — enticing, specific, emotionally resonant.`,
+    'You are a professional book editor writing back-cover copy. Use the full novel context provided. Return ONLY the synopsis text.',
+    novelCtx
+  );
+  setEdAI(false);
+  if(r){document.getElementById('synopsis-text').value=r;S.novel.synopsis=r;scheduleSave();showToast('Synopsis generated ✓','success');}
 }
 function copyAiOutput(){
   const txt=document.getElementById('ai-output-area').innerText||'';
@@ -1582,13 +1868,24 @@ function fmtDate(iso){try{return new Date(iso).toLocaleDateString(undefined,{mon
 // ═══════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded',()=>{
   renderTools();
-  checkForBYOPKey();
-  const t=sessionStorage.getItem('nc_token'),u=sessionStorage.getItem('nc_user'),pt=sessionStorage.getItem('nc_poll_token');
-  if(t&&u&&pt){S.token=t;S.pollinationsToken=pt;S.user=JSON.parse(u);S.repoOwner=S.user.login;document.getElementById('user-avatar').src=S.user.avatar_url;document.getElementById('user-name').textContent=S.user.login;showScreen('screen-list');ensureRepo().then(loadNovels);}
-  document.getElementById('gh-token').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-  document.getElementById('pollinations-token').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  // Check if returning from Pollinations BYOP OAuth
+  const byopReturned = checkForBYOPKey();
+  // Load stored Pollinations key
+  const storedKey=localStorage.getItem('nc_poll_key');
+  if(storedKey)S.pollinationsToken=storedKey;
+  // If we already have novels OR a poll key, skip login and go to library
+  const hasNovels=getNovelIds().length>0;
+  if(storedKey||hasNovels){
+    showScreen('screen-list');
+    loadNovels();
+  }
+  // Event listeners
+  document.getElementById('pollinations-token').addEventListener('keydown',e=>{if(e.key==='Enter')doSetup();});
   document.getElementById('modal-new').addEventListener('click',e=>{if(e.target===document.getElementById('modal-new'))closeModal();});
   document.getElementById('modal-export').addEventListener('click',e=>{if(e.target===document.getElementById('modal-export'))closeExportModal();});
+  document.getElementById('modal-settings').addEventListener('click',e=>{if(e.target===document.getElementById('modal-settings'))closeSettings();});
+  // Auto-save on page unload as safety net
+  window.addEventListener('beforeunload',()=>{if(S.novel){clearTimeout(S.saveTimer);saveToLocal();}});
 });
 </script>
 </body>
