@@ -1569,8 +1569,8 @@ async function getChapterSummary(idx,ch,statusCb){
   if(!text)return`[Chapter ${idx+1} — no content yet]`;
   if(statusCb)statusCb(`📚 Summarising Ch.${idx+1} (${SUMMARY_MODEL})…`);
   const summary=await callAIRaw(
-    `Summarise this chapter in 3-4 sentences. Cover: key events, what characters do, emotional beats, any plot revelations. Be specific — names, actions, outcomes.\n\nCHAPTER ${idx+1}: ${ch.title||''}\n\n${text.slice(0,4000)}`,
-    'You are a precise literary summariser. Return ONLY a concise paragraph summary — no labels, no preamble.'
+    `Summarise this chapter in 3-4 sentences. Cover: key events, FULL NAMES of every character who appears (never use "the protagonist" or generic labels — use their actual names from the text), what each character does, emotional beats, plot revelations, and the exact situation at the chapter's end.\n\nCHAPTER ${idx+1}: ${ch.title||''}\n\n${text.slice(0,4000)}`,
+    'You are a precise literary summariser. Return ONLY a concise paragraph summary — no labels, no preamble. Always refer to characters by their proper names.'
   );
   const result=summary||`Chapter ${idx+1} (${ch.title||'Untitled'}): [summary unavailable]`;
   S.chSummaryCache[key]=result;
@@ -1595,10 +1595,17 @@ async function buildNovelContext(mode,statusCb){
   ctx+=`Title: "${n.title||'Untitled'}" | Author: ${n.author||'Unknown'} | Genre: ${n.genre||'Fiction'}\n`;
   if(n.synopsis)ctx+=`\nSynopsis:\n${n.synopsis.slice(0,600)}\n`;
   if(n.characters?.length){
-    ctx+=`\nCharacters:\n`;
+    ctx+=`\nNAMED CHARACTERS (always use these exact names — never replace with generic labels):\n`;
     n.characters.forEach(c=>{ctx+=`• ${c.name} (${c.role})${c.description?': '+c.description.slice(0,160):''}\n`;});
   }
   if(n.worldNotes)ctx+=`\nWorld & Notes:\n${n.worldNotes.slice(0,400)}\n`;
+  ctx+=`\n=== CONTINUITY ANCHOR ===\n`;
+  ctx+=`IMPORTANT: Before writing anything, extract from the story content below:\n`;
+  ctx+=`1. The proper name of every character introduced so far — use ONLY these names, never "the protagonist" or "the stranger"\n`;
+  ctx+=`2. The last physical location and situation where each main character was\n`;
+  ctx+=`3. Any unresolved plot threads (countdowns, secrets, confrontations, mysteries)\n`;
+  ctx+=`4. The emotional state and goal of the POV character at the end of the most recent chapter\n`;
+  ctx+=`Use these anchors to ensure seamless continuity in any text you generate.\n`;
 
   const chapsWithContent=chapters.filter(c=>stripHtml(c.content||'').trim().length>0);
   if(!chapsWithContent.length)return ctx;
@@ -1685,16 +1692,26 @@ function mdToHtml(text){
   return paras.map(p=>p.trim()?'<p>'+p.replace(/\n/g,'<br>')+'</p>':'').filter(Boolean).join('\n');
 }
 
-const WRITING_SYSTEM=`You are a professional literary fiction author and writing assistant.
-FORMATTING RULES — always follow these without exception:
-1. All dialogue must use proper curly/smart quotes: \u201Clike this\u201D — never straight quotes "like this"
-2. Use *italics* (wrap in single asterisks) for: internal thoughts, foreign words, titles, emphasis, whispers
-3. Use **bold** (wrap in double asterisks) for: shocking revelations, sudden sounds, extremely important moments
-4. Never use markdown headers (##) or bullet points in fiction prose
-5. Paragraphs are separated by blank lines
-6. Start dialogue on a new paragraph for each new speaker
-You have been given the FULL novel context. Use it to maintain perfect continuity of characters, plot, tone, and world details.
-Respond with ONLY the requested story content — no preamble, no commentary.`;
+const WRITING_SYSTEM=`You are a skilled literary fiction author. Your writing feels authentically human — it breathes, surprises, and earns its emotions.
+
+HARD RULES — never break these:
+1. NAMES: Every character must have a proper name. NEVER refer to anyone as "the protagonist", "the stranger", "the woman", or any generic label once their name is known. If a character has no name yet, give them one before writing them into the scene. Track names scrupulously from the context.
+2. INTRODUCTIONS: New characters must be seeded before they appear. If a new character shows up in your output, you must plant at least one subtle hint or reference to them earlier in the same passage — a rumour, a shadow, an object they left behind. Characters cannot materialise from thin air.
+3. SENTENCE RHYTHM: Vary your sentence length deliberately. Short sentences punch. Then a longer one unspools the tension, carries the reader somewhere unexpected, lingers. Then short again. Never write three sentences of the same length in a row.
+4. SENSORY RESTRAINT: Use at most ONE strong sensory metaphor per scene. Do not repeat the same metaphor type (taste, smell, sound) twice in a chapter. "Tasted like copper" is overused — avoid it entirely.
+5. EMOTIONAL TRUTH: Show emotional states through specific physical actions and micro-details, not through adjectives. Don't say a character is scared — show what their hands do, what they notice, what they stop noticing.
+6. CONTINUITY: Read every character name, plot thread, and world detail from the FULL novel context above. Reference at least one specific detail from a prior chapter in every new passage you write. Nothing exists in isolation.
+7. FORESHADOWING: Plant one seed per scene — a small, unresolved detail that could pay off later. It should feel natural, not obvious.
+
+FORMATTING RULES:
+- All dialogue: curly/smart quotes \u201Clike this\u201D — never straight quotes
+- Internal thoughts: *italics* (single asterisks)
+- Truly pivotal moments only: **bold** (double asterisks) — use sparingly
+- No markdown headers (##) or bullet points in prose ever
+- Blank lines between paragraphs
+- New paragraph for each new speaker in dialogue
+
+Respond with ONLY the story content — no preamble, no meta-commentary, no labels.`;
 
 async function aiContinue(){
   if(S.aiBusy)return;
@@ -1706,7 +1723,7 @@ async function aiContinue(){
   setEdAI(true,'✍️ Writing continuation…');
   const chTitle=S.novel?.chapters?.[S.chIdx]?.title||`Chapter ${(S.chIdx||0)+1}`;
   const r=await callAI(
-    `Continue the story in chapter "${chTitle}" seamlessly from where it ends. Match the exact style, voice, and pacing. Write 3-4 paragraphs.\n\nMaintain full continuity with ALL previous chapters in the context above — same characters, world rules, tone, unresolved threads.\n\nFormatting: *italics* for thoughts, **bold** for pivotal moments, \u201Ccurly quotes\u201D for all dialogue.`,
+    `Continue chapter "${chTitle}" seamlessly from where it ends. Before writing, identify from the context: (1) the exact names of all characters present, (2) the last sentence of the current chapter, (3) any unresolved tension in the scene.\n\nWrite 3-4 paragraphs that:\n- Open directly from the last moment — no scene reset, no time skip unless earned\n- Use every character's proper name (never "the protagonist" or generic labels)\n- Vary sentence length — mix short punches with longer flowing lines\n- Include exactly ONE strong sensory detail, used once\n- Reference at least one specific event or detail from a previous chapter\n- End on a moment of tension, decision, or revelation that invites the next passage\n\nFormatting: *italics* for internal thoughts, \u201Ccurly quotes\u201D for all dialogue, **bold** only for truly pivotal moments.`,
     WRITING_SYSTEM, novelCtx
   );
   setEdAI(false);
@@ -1720,7 +1737,7 @@ async function aiImprove(){
   const novelCtx=await buildNovelContext('write',msg=>setEdAI(true,msg));
   setEdAI(true,'✨ Improving writing…');
   const r=await callAI(
-    `Rewrite this passage with elevated prose — richer imagery, stronger verbs, deeper sensory detail, better rhythm. Keep the same plot events and stay consistent with the characters and world in the context above.\n\nFormatting: *italics* for thoughts/emphasis, \u201Ccurly quotes\u201D for dialogue, **bold** only for truly pivotal moments.\n\nPASSAGE:\n${text.slice(-1200)}`,
+    `Rewrite this passage with elevated prose — richer imagery, stronger verbs, deeper sensory detail (max ONE per scene), better rhythm (vary sentence length). Keep the same plot events, and:\n- Preserve every character's name exactly as written — do NOT introduce new characters\n- Stay fully consistent with the characters and world in the context above\n- Avoid the phrase "tasted like copper" or any overused sensory clichés\n- Do NOT add any text after the passage ends — rewrite only what is given\n\nFormatting: *italics* for thoughts/emphasis, \u201Ccurly quotes\u201D for dialogue, **bold** only for truly pivotal moments.\n\nPASSAGE:\n${text.slice(-1200)}`,
     WRITING_SYSTEM, novelCtx
   );
   setEdAI(false);if(r)showReviewPopup(r);
@@ -1788,16 +1805,16 @@ function acceptRev(btn){
 
 // ── AI STUDIO TOOLS ──
 const AI_TOOLS=[
-  {icon:'📖',text:'Chapter Outline',p:'Using the full novel context above, create a detailed outline for the NEXT chapter with numbered scenes. Each scene should follow logically from where the story currently is.'},
-  {icon:'💡',text:'Plot Twists',p:'Based on the full story context, brainstorm 5 surprising but earned plot twists that would work right now in the narrative. Each should emerge naturally from existing characters and threads.'},
-  {icon:'🌍',text:'World Building',p:'Based on the story context, deepen the world-building. Expand on the geography, culture, and systems implied but not fully explored. Stay consistent with what\'s already established.'},
-  {icon:'💬',text:'Dialogue Scene',p:'Write a compelling, character-revealing dialogue scene that fits naturally at this point in the story. Use characters already introduced. Rich subtext, distinct voices. Use \u201Ccurly quotes\u201D for all dialogue.'},
-  {icon:'😈',text:'Create Antagonist',p:'Design or deepen the antagonist for this story. Use the novel context to ensure they are a meaningful threat to the protagonist and connected to the established plot.'},
-  {icon:'🌅',text:'Opening Hook',p:'Write 3 different opening hooks for the NEXT chapter that follow logically from where the story ended. Reference specific story events in each option.'},
-  {icon:'🎭',text:'Scene Transition',p:'Write a cinematic scene transition bridging the current chapter to the next, maintaining emotional momentum and continuity with events in the story.'},
-  {icon:'🎬',text:'Climax Scene',p:'Based on ALL the story context, write a devastating, emotionally satisfying climax that pays off the specific threads and character arcs established in previous chapters.'},
-  {icon:'💔',text:'Emotional Moment',p:'Write a deeply emotional, character-defining moment for one of the main characters. Ground it in their established backstory, relationships, and recent chapter events.'},
-  {icon:'🔍',text:'Story Analysis',p:'Analyse the full story so far and identify: 5 plot threads that need resolution, any continuity issues, character arcs that need development, and specific recommendations for future chapters.'},
+  {icon:'📖',text:'Chapter Outline',p:'Using the full novel context above, create a detailed outline for the NEXT chapter with numbered scenes. Each scene must follow logically from where the story currently ends — reference the exact situation and character names from the last chapter. No scene should introduce a character without prior setup.'},
+  {icon:'💡',text:'Plot Twists',p:'Based on the full story context, brainstorm 5 surprising but earned plot twists for right now in the narrative. Each twist must: (1) emerge from seeds already planted in existing chapters, (2) involve named characters already introduced, (3) deepen rather than discard established threads.'},
+  {icon:'🌍',text:'World Building',p:'Based on the story context, deepen the world-building. Expand on geography, culture, and systems implied but not fully explored. Reference specific details from the existing chapters and stay consistent with every established rule.'},
+  {icon:'💬',text:'Dialogue Scene',p:'Write a compelling, character-revealing dialogue scene that fits naturally at this point in the story. Use ONLY characters already named and introduced in the context. Give each character a distinct voice and speech pattern. Rich subtext. Use \u201Ccurly quotes\u201D for all dialogue. No character should be called "the protagonist" or any generic label.'},
+  {icon:'😈',text:'Create Antagonist',p:'Design or deepen the antagonist for this story using the novel context. If an antagonist already exists, expand their motivation. If creating new, explain exactly how and WHERE they have already been hinted at in the existing chapters — their entry must feel inevitable, not sudden. Connect them directly to the protagonist by their name.'},
+  {icon:'🌅',text:'Opening Hook',p:'Write 3 different opening hooks for the NEXT chapter. Each must: (1) follow directly from the last sentence of the most recent chapter, (2) use the exact names of characters already present, (3) feel tonally consistent with the established voice.'},
+  {icon:'🎭',text:'Scene Transition',p:'Write a cinematic scene transition bridging the current chapter to the next. Maintain emotional momentum, reference the specific situation the named characters are in, and plant one small detail that will pay off later. No generic scene-setting — every sentence earns its place.'},
+  {icon:'🎬',text:'Climax Scene',p:'Based on ALL the story context, write a climax that pays off every specific thread and character arc established in previous chapters. Every named character should have a moment. No new characters. No new MacGuffins. Only what was already seeded.'},
+  {icon:'💔',text:'Emotional Moment',p:'Write a deeply emotional, character-defining moment for one of the named main characters. Ground it in their established backstory and recent chapter events. Show emotion through physical micro-details and action — not adjectives. Reference something specific from a previous chapter.'},
+  {icon:'🔍',text:'Story Analysis',p:'Analyse the full story so far and identify: (1) every named character and their current arc status, (2) 5 unresolved plot threads that need payoff, (3) any continuity issues or characters referred to inconsistently, (4) places where a character was called a generic label instead of their name, (5) specific recommendations for the next 2 chapters.'},
 ];
 function renderTools(){document.getElementById('ai-tools-list').innerHTML=AI_TOOLS.map((t,i)=>`<button class="tool-btn" onclick="runTool(${i})"><span style="font-size:15px">${t.icon}</span>${t.text}</button>`).join('');}
 async function runTool(i){
@@ -1834,7 +1851,7 @@ async function aiSynopsis(){
   const novelCtx=await buildNovelContext('meta',msg=>setEdAI(true,msg));
   setEdAI(true,'📋 Writing synopsis…');
   const r=await callAI(
-    `Write a compelling 3-paragraph back-cover synopsis for this novel. Read the FULL story content above — reference specific plot points, character journeys, and the central conflict.\n1. Hook the reader in the opening line\n2. Introduce protagonist and central conflict\n3. Hint at stakes and climax without spoiling\n\nWrite as a professional publisher — enticing, specific, emotionally resonant.`,
+    `Write a compelling 3-paragraph back-cover synopsis for this novel. Read the FULL story content above — reference specific named characters, their actual relationships, key plot points, and the central conflict by name.\n1. Hook the reader in the opening line using the protagonist's actual name\n2. Introduce the named protagonist and central conflict with specific stakes\n3. Hint at the climax and emotional cost without spoiling — use the actual character names and situations from the story\n\nWrite as a professional publisher — enticing, specific, emotionally resonant. Never call anyone "the protagonist".`,
     'You are a professional book editor writing back-cover copy. Use the full novel context provided. Return ONLY the synopsis text.',
     novelCtx
   );
